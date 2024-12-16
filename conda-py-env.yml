@@ -1,0 +1,14 @@
+name: movieproject2
+
+channels:
+  - defaults
+  - anaconda
+  - pip
+dependencies:
+  - python
+  - pip=24.3.1
+  - pandas=2.2.2
+  - numpy
+  - scipy=1.13.1
+  - pip:
+    - pydeface==2.0.2

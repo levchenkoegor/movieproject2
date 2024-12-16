@@ -1,0 +1,10 @@
++LeftFoot -RightFoot
++LeftHand -RightHand
++LeftFace -RightFace
++LeftTongue -RightTongue
++LeftFace +RightFace -LeftFoot -RightFoot
++LeftFace +RightFace -LeftHand -RightHand
++LeftFace +RightFace -LeftTongue -RightTongue
++LeftHand +RightHand -LeftFoot -RightFoot
++LeftHand +RightHand -LeftTongue -RightTongue
++LeftFoot +RightFoot -LeftTongue -RightTongue
