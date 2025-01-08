@@ -127,7 +127,7 @@ plt.xlim(-0.05, 1.2)
 plt.ylabel("Percentage (%)")
 plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.legend(loc='upper right')
-plt.savefig(plots_dir / "overall_fd_distribution_percentage.png")
+plt.savefig(plots_dir / "task-somatotopy_overall_fd_distribution_percentage.png")
 plt.close()
 
 # Task-based FD analysis
@@ -167,7 +167,7 @@ plt.xlabel("Conditions")
 plt.ylabel("Framewise Displacement (mm)")
 plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.tight_layout()
-plt.savefig(plots_dir / "condition_specific_fd.png")
+plt.savefig(plots_dir / "task-somatotopy_condition_specific_fd.png")
 plt.close()
 
 print('Plots were saved')
