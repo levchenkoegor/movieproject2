@@ -1,14 +1,17 @@
 name: movieproject2
 
 channels:
-  - defaults
+  - conda-forge
   - anaconda
+  - defaults
   - pip
 dependencies:
-  - python
+  - python=3.12.8
   - pip=24.3.1
   - pandas=2.2.2
-  - numpy
+  - numpy=1.26.4
   - scipy=1.13.1
+  - nibabel=5.3.2
+  - nilearn=0.11.1
   - pip:
     - pydeface==2.0.2
