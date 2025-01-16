@@ -39,15 +39,6 @@ for subj_id in $subjects; do
         -f convertall -s "$subj_id" -ss "$sess_id" \
         -c none
 
-      # Conditional second Docker run for specific subjects
-      #if [ "$subj_id" -eq 05 ] || [ "$subj_id" -eq 06 ]; then
-      #  docker run --rm -v "${project_path}:/base" nipy/heudiconv:latest \
-      #    -d "/base/raw_data/sub-{subject}/sess-{session}/MPM*/*.dcm" \
-      #    -o "/base/analysis/heudiconv_first_outputs/" \
-      #    -f convertall -s "$subj_id" -ss 003 \
-      #    -c none
-      #fi
-
     done
   else
     echo "Directory $subj_dir does not exist."
@@ -110,7 +101,7 @@ done
 for subject in $subjects; do
 
     # Skip bad subject
-    if subject [[ "$subject" == "29" ]]; then
+    if [[ "$subject" == "29" ]]; then
         continue
     fi
 
@@ -189,20 +180,29 @@ for subject in $subjects; do
             fi
 
             # Define the output file path
-            output_file="$dest_path/sub-${subject}_ses-${session_num}_run-${run_id}_task-${task_name}_eyelinkraw.edf.gz"
+            output_edf="$dest_path/sub-${subject}_ses-${session_num}_run-${run_id}_task-${task_name}_eyelinkraw.edf"
+            output_asc="$dest_path/sub-${subject}_ses-${session_num}_run-${run_id}_task-${task_name}_eyelinkraw.asc"
 
             # Check if the file already exists
-            if [[ -f "$output_file" ]]; then
-                echo "File already exists: $output_file. Overwriting... (made on purpose!)"
+            if [[ -f "$output_edf" ]]; then
+                echo "File already exists: $output_edf. Overwriting... (made on purpose!)"
+            fi
+            if [[ -f "$output_asc" ]]; then
+                echo "File already exists: $output_asc. Overwriting... (made on purpose!)"
             fi
 
             # Rename and compress each .edf file with the appropriate run number
             echo "Copying and gziping raw eyetracker EDF data for sub-${subject}, ${session_name}, task-${task_name}, run-${run_id}..."
-            gzip -c "$edf_file" > "$output_file"
+            gzip -c "$edf_file" > "${output_edf}.gz"
+
+            # Convert to ASCII using eye-link developers kit and compress
+            edf2asc "$edf_file" "$output_asc"
+            gzip -f "$output_asc"
 
         done
     done
 done
+
 
 
 ### Step 5
