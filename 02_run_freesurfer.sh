@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-# Setup freesufer and directories
+# Setup freesurfer and directories
 export FREESURFER_HOME=/tools/freesurfer
 source $FREESURFER_HOME/SetUpFreeSurfer.sh
 
@@ -17,7 +17,6 @@ else
     echo "SUBJECTS_DIR doesn't exist. Creating one now..."
     mkdir -p "$SUBJECTS_DIR"
 fi
-
 
 # Run
 for subj_id in $subjects; do

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 # This script was developed and tested under bash 5.0.17(1)-release
 echo "The script was developed and tested under bash 5.0.17(1)-release"
 echo -e "Your version of bash is $BASH_VERSION\n"
@@ -17,8 +18,10 @@ heudiconv_version=$(docker run --rm nipy/heudiconv:latest heudiconv --version)
 
 # Define the path to the project
 project_path="/data/elevchenko/MovieProject2"
-subjects="01 02 03 04 05 06 07 08 09 10 11 12 13 14 16 17 18 19 20 21 22 23 24 25 26 27 29 30 31 32 33 34 35 36 37 38 39 40 42 43 44"
-# Excluded: 15 (didn't feel well), 28 & 41 - never came
+subjects="01 02 03 04 05 06 07 08 09 10 11 12 13 14 16 17 18 19 20 21 22 23 24 25 26 27 29 30 31 32 33 35 36 37 38 39 40 42 43 44"
+# Excluded: 15 (didn't feel well)
+# 34 (didn't feel comfortable in the scanner, lots of movements)
+# 28 & 41 - never came
 
 for subj_id in $subjects; do
   subj_dir="${project_path}/raw_data/sub-$subj_id/"
@@ -96,7 +99,7 @@ done
 
 
 ### Step 4
-## Put raw eye-tracker data (backtothefuture and pRF tasks) to sourcedata/ folder
+## Put raw eye-tracker data (backtothefuture and retinotopy tasks) to sourcedata/ folder
 
 for subject in $subjects; do
 
@@ -176,7 +179,7 @@ for subject in $subjects; do
             if [[ "$session_num" == "001" ]]; then
                 task_name="backtothefuture"
             else
-                task_name="pRF"
+                task_name="retinotopy"
             fi
 
             # Define the output file path
@@ -213,8 +216,8 @@ conda activate movieproject2
 
 # Tonotopy
 python "$project_path"/analysis/tonotopy_behaviour.py
-# pRF
-python "$project_path"/analysis/pRF_behaviour.py
+# Retinotopy
+python "$project_path"/analysis/retinotopy_behaviour.py
 
 
 ### Step 6
