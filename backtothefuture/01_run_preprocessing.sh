@@ -3,7 +3,7 @@
 # Paths
 export data_folder=/data/elevchenko/MovieProject2/bids_data
 export stim_folder=/data/elevchenko/MovieProject2/stimuli
-export fs_folder=/data/elevchenko/MovieProject2/bids_data/freesurfer
+export fs_folder=/data/elevchenko/MovieProject2/bids_data/derivatives/freesurfer
 
 # Maximum number of parallel jobs
 max_jobs=16
@@ -48,7 +48,7 @@ for subject_id in $subjects; do
       # 01 (run2 stopped in the end)
       # 02 (incorrect cut for movie files)
       # 03 (run1 stopped in the end)
-      # 10 (had to stop run3 15 mins before the end)
+      # 10 (had to stop run3 15 mins before the end & 5-min MPRAGE was acquired during Session 2)
       # 24 (movie paused during run1: 1025 + 351 TRs)
       # 36 (movie paused during run1: 400 + 978 TRs) *weird number of TRs (2 more than expected)
       if [ "$subject_id" == "01" ]; then
@@ -96,7 +96,6 @@ for subject_id in $subjects; do
           -anat_follower_ROI aeseg    epi  "$fs_folder/sub-${subject_id}/SUMA/aparc.a2009s+aseg.nii.gz" \
           -anat_follower_ROI fsvent   epi  "$fs_folder/sub-${subject_id}/SUMA/fs_ap_latvent.nii.gz" \
           -anat_follower_ROI fswm     epi  "$fs_folder/sub-${subject_id}/SUMA/fs_ap_wm.nii.gz" \
-          -anat_follower_ROI fsgm     epi  "$fs_folder/sub-${subject_id}/SUMA/fs_ap_gm.nii.gz" \
           -anat_follower_erode fsvent fswm \
           -align_opts_aea -cost lpc+ZZ -giant_move -check_flip \
           -tlrc_base MNI152_2009_template_SSW.nii.gz \
@@ -137,7 +136,10 @@ for subject_id in $subjects; do
       tcsh -xef "$script_path" 2>&1 | tee "$output_path"
 
 
-      # End timing
+      # compressing files
+      find "${results_path}" -type f \( -name "*.nii" -o -name "*.BRIK" \) -exec sh -c 'echo "Processing: {}"; gzip -f "{}"' \;
+
+      # end timing
       end_time=$(date +%s)
 
       # Calculate elapsed time
@@ -154,7 +156,9 @@ done
 # Wait for all background jobs to finish
 wait
 
+
 # Useful links of rationale of the analysis:
 # ISC recommendations by Chen and Cox: https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/_downloads/s.2016_ChenEtal_02_ap.tcsh
 # Polort and bandpassing: https://discuss.afni.nimh.nih.gov/t/afni-proc-regress-polort-option-for-very-long-runs/3487
-# Blurring: Default blurring option is 4mm (afni documentation) and paper by Chen and Cox used 4mm too.
+# Blurring: Default blurring option is 4mm (afni documentation) and paper by Chen and Cox used 4mm too
+# Erode or not erode: https://discuss.afni.nimh.nih.gov/t/erode-fs-ap-wm-nii-gz-from-suma-make-spec-fs/2854
