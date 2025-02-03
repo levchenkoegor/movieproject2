@@ -19,9 +19,9 @@ heudiconv_version=$(docker run --rm nipy/heudiconv:latest heudiconv --version)
 # Define the path to the project
 project_path="/data/elevchenko/MovieProject2"
 subjects="01 02 03 04 05 06 07 08 09 10 11 12 13 14 16 17 18 19 20 21 22 23 24 25 26 27 29 30 31 32 33 35 36 37 38 39 40 42 43 44"
-# Excluded: 15 (didn't feel well)
-# 34 (didn't feel comfortable in the scanner, lots of movements)
-# 28 & 41 - never came
+# Excluded:
+# 15 & 34 (didn't feel well inside the scanner)
+# 28 & 41 (never came)
 
 for subj_id in $subjects; do
   subj_dir="${project_path}/raw_data/sub-$subj_id/"
@@ -106,6 +106,7 @@ for subject in $subjects; do
     # Skip bad subject
     if [[ "$subject" == "29" ]]; then
         continue
+        # Bad eye-tracker data, couldn't really calibrate
     fi
 
     # Get the list of session folders for the subject
@@ -253,6 +254,12 @@ chmod 777 -R "${project_path}/bids_data"
 
 
 ### Step 8
+# Compress all NIFTI files to save space
+
+find "$project_path"/bids_data -type f -name "*.nii" -exec sh -c 'echo "Processing: {}"; gzip -f "{}"' \;
+
+
+### Step 9
 ## Check if the folder is BIDS valid
 
 # BIDS validator
