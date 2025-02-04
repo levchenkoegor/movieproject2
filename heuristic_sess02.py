@@ -34,21 +34,21 @@ def infotodict(
     t1w = create_key('sub-{subject}/{session}/anat/sub-{subject}_{session}_T1w')
     t1w_5min = create_key('sub-{subject}/{session}/anat/sub-{subject}_{session}_acq-highres_T1w') # specifically for P001706
 
-    # Somamotor
+    # Somatotopy
     func_motor_r1 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-motor_run-001_bold')
     func_motor_sbref_r1 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-motor_run-001_sbref')
     func_motor_r2 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-motor_run-002_bold')
     func_motor_sbref_r2 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-motor_run-002_sbref')
     fmap_motor_phaserev = create_key('sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-motor_dir-PA_epi')
 
-    # pRF
-    func_pRF_r1 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-pRF_run-001_bold')
-    func_pRF_sbref_r1 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-pRF_run-001_sbref')
-    func_pRF_r2 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-pRF_run-002_bold')
-    func_pRF_sbref_r2 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-pRF_run-002_sbref')
-    func_pRF_r3 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-pRF_run-003_bold')
-    func_pRF_sbref_r3 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-pRF_run-003_sbref')
-    fmap_pRF_phaserev = create_key('sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-pRF_dir-PA_epi')
+    # Retinotopy
+    func_pRF_r1 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-retinotopy_run-001_bold')
+    func_pRF_sbref_r1 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-retinotopy_run-001_sbref')
+    func_pRF_r2 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-retinotopy_run-002_bold')
+    func_pRF_sbref_r2 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-retinotopy_run-002_sbref')
+    func_pRF_r3 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-retinotopy_run-003_bold')
+    func_pRF_sbref_r3 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-retinotopy_run-003_sbref')
+    fmap_pRF_phaserev = create_key('sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-retinotopy_dir-PA_epi')
 
     # Tonotopy
     func_tonotopy_r1 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-tonotopy_run-001_bold')
@@ -120,7 +120,7 @@ def infotodict(
             info[t1w_5min].append(s.series_id)
 
 
-        # Somatomotor
+        # Somatotopy
         if ('func-bold_task-motor_run-01' in s.series_description) and (s.dim4 == 467):
             info[func_motor_r1].append(s.series_id)
             time_motor_run1 = float(s.time)
@@ -137,7 +137,7 @@ def infotodict(
             info[fmap_motor_phaserev].append(s.series_id)
 
 
-        # pRF
+        # Retinotopy
         if ('func-bold_task-pRF_run-01' in s.series_description) and (s.dim4 == 356) and (just_once == 0):
             info[func_pRF_r1].append(s.series_id)
             time_prf_run1 = float(s.time)
@@ -159,7 +159,6 @@ def infotodict(
 
         if ('func-bold_task-pRF_PE-Rev' == s.series_description):
             info[fmap_pRF_phaserev].append(s.series_id)
-
 
 
         # Tonotopy
@@ -186,6 +185,5 @@ def infotodict(
 #            info[pdw_mpm].append(s.series_id)
 #        if ('mtw_mfc_3dflash_v3i_R4' in s.series_description):
 #            info[t1w_mpm].append(s.series_id)
-
 
     return info
