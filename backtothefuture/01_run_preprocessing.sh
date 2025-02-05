@@ -5,12 +5,14 @@ export data_folder=/data/elevchenko/MovieProject2/bids_data
 export stim_folder=/data/elevchenko/MovieProject2/stimuli
 export fs_folder=/data/elevchenko/MovieProject2/bids_data/derivatives/freesurfer
 
-# Maximum number of parallel jobs
-max_jobs=16
+# Maximum number of parallel jobs nad threads
+max_jobs=10
+export OMP_NUM_THREADS=3
 
-#subjects="01 02 03 04 05 06 07 08 09 10 11 12 13 14 16 17 18 19 20 21 22 23 24 25 26 27 29 30 31 32 33 34 35 36 37 38 39 40 42 43 44"
+# Extract subject IDs dynamically from the bids_data folder
+subjects=$(ls -d $data_folder/sub-* | awk -F'/' '{print $NF}' | sed 's/sub-//')
 
-subjects="01 07"
+subjects="01 07" # for tests
 
 # Run AFNI
 for subject_id in $subjects; do
@@ -21,7 +23,7 @@ for subject_id in $subjects; do
 
       # Paths for outputs
       echo "Processing subject-$subject_id"
-      subject_folder="$data_folder"/derivatives/sub-"$subject_id"/movie
+      subject_folder="$data_folder"/derivatives/sub-"$subject_id"/backtothefuture
       script_path="$subject_folder"/proc.sub-"$subject_id"
       output_path="$subject_folder"/output.proc.sub-"$subject_id"
       results_path="$subject_folder"/sub-"$subject_id".results
@@ -96,6 +98,7 @@ for subject_id in $subjects; do
           -anat_follower_ROI aeseg    epi  "$fs_folder/sub-${subject_id}/SUMA/aparc.a2009s+aseg.nii.gz" \
           -anat_follower_ROI fsvent   epi  "$fs_folder/sub-${subject_id}/SUMA/fs_ap_latvent.nii.gz" \
           -anat_follower_ROI fswm     epi  "$fs_folder/sub-${subject_id}/SUMA/fs_ap_wm.nii.gz" \
+          -anat_follower_ROI fsgm     epi  "$fs_folder/sub-${subject_id}/SUMA/aparc+aseg_REN_gm.nii.gz" \
           -anat_follower_erode fsvent fswm \
           -align_opts_aea -cost lpc+ZZ -giant_move -check_flip \
           -tlrc_base MNI152_2009_template_SSW.nii.gz \
@@ -129,15 +132,12 @@ for subject_id in $subjects; do
           -regress_opts_3dD -num_stimts 1 -local_times \
               -stim_label 1 Speech \
               -stim_times_AM1 1 "$stim_file" 'dmUBLOCK(1)' \
-        -remove_preproc_files \
-        -html_review_style pythonic
+          -regress_reml_exec \
+          -remove_preproc_files \
+          -html_review_style pythonic
 
       # execute preproc script
       tcsh -xef "$script_path" 2>&1 | tee "$output_path"
-
-
-      # compressing files
-      find "${results_path}" -type f \( -name "*.nii" -o -name "*.BRIK" \) -exec sh -c 'echo "Processing: {}"; gzip -f "{}"' \;
 
       # end timing
       end_time=$(date +%s)
@@ -148,7 +148,7 @@ for subject_id in $subjects; do
     ) &
 
     # Limit the number of parallel jobs
-    while [ "$(jobs -r | wc -l)" -ge "$max_jobs" ]; do
+    while [ "$(ps -eo state= | grep -c 'R')" -ge "$max_jobs" ]; do
         sleep 1
     done
 done
@@ -156,8 +156,11 @@ done
 # Wait for all background jobs to finish
 wait
 
+# compressing files
+find "${data_folder}"/derivatives -type f \( -name "*.nii" -o -name "*.BRIK" \) -exec sh -c 'echo "Processing: {}"; gzip -f "{}"' \;
 
-# Useful links of rationale of the analysis:
+
+### Useful links to understand the rationale of the analysis:
 # ISC recommendations by Chen and Cox: https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/_downloads/s.2016_ChenEtal_02_ap.tcsh
 # Polort and bandpassing: https://discuss.afni.nimh.nih.gov/t/afni-proc-regress-polort-option-for-very-long-runs/3487
 # Blurring: Default blurring option is 4mm (afni documentation) and paper by Chen and Cox used 4mm too
