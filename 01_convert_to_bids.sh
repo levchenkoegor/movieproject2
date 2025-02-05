@@ -9,6 +9,8 @@ echo -e "Your version of bash is $BASH_VERSION\n"
 echo "The script was developed and tested under heudiconv 1.3.0"
 heudiconv_version=$(docker run --rm nipy/heudiconv:latest heudiconv --version)
 
+# Parallelisation
+max_jobs=10
 
 ### Step 1
 ## Create heuristics.py and all dicominfo.tsv files for each subject with heudiconv tool
@@ -26,28 +28,38 @@ subjects="01 02 03 04 05 06 07 08 09 10 11 12 13 14 16 17 18 19 20 21 22 23 24 2
 for subj_id in $subjects; do
   subj_dir="${project_path}/raw_data/sub-$subj_id/"
 
-  # Check if the subject directory exists
-  if [ -d "$subj_dir" ]; then
-    sess_ids=$(ls "$subj_dir")
+  (
+    # Check if the subject directory exists
+    if [ -d "$subj_dir" ]; then
+      sess_ids=$(ls "$subj_dir")
 
-    # Main loop for session processing
-    for full_sess_id in $sess_ids; do
-      sess_id="${full_sess_id:5}"
-      echo "$sess_id"
+      # Main loop for session processing
+      for full_sess_id in $sess_ids; do
+        sess_id="${full_sess_id:5}"
+        echo "$sess_id"
 
-      # main Docker run
-      docker run --rm -v "${project_path}:/base" nipy/heudiconv:latest \
-        -d "/base/raw_data/sub-{subject}/sess-{session}/*/*.dcm" \
-        -o "/base/analysis/heudiconv_first_outputs/" \
-        -f convertall -s "$subj_id" -ss "$sess_id" \
-        -c none
+        # main Docker run
+        docker run --rm -v "${project_path}:/base" nipy/heudiconv:latest \
+          -d "/base/raw_data/sub-{subject}/sess-{session}/*/*.dcm" \
+          -o "/base/analysis/heudiconv_first_outputs/" \
+          -f convertall -s "$subj_id" -ss "$sess_id" \
+          -c none
 
-    done
-  else
-    echo "Directory $subj_dir does not exist."
-  fi
+      done
+    else
+      echo "Directory $subj_dir does not exist."
+    fi
+  ) &
+
+  # Limit the number of parallel jobs
+  while [ "$(ps -eo state= | grep -c 'R')" -ge "$max_jobs" ]; do
+      sleep 1
+  done
 
 done
+
+# Wait for all background jobs to finish
+wait
 
 
 ## The output gives you a bunch of files: filegroup.json, heuristic.py, {subject}.auto.txt, dicominfo.tsv, {subject}.edit.txt
@@ -234,12 +246,22 @@ find "$project_path"/bids_data/ -type f -name "*_T1w.nii.gz" | sort | while read
     # Display the current file being processed
     echo "Processing: $anat_file"
 
-    # Run pydeface and overwrite the original file
-    pydeface "$anat_file" --outfile "$anat_file" --force
+    (
+      # Run pydeface and overwrite the original file
+      pydeface "$anat_file" --outfile "$anat_file" --force
 
-    # Indicate completion of current file
-    echo "Defacing complete for: $anat_file"
+      # Indicate completion of current file
+      echo "Defacing complete for: $anat_file"
+    ) &
+
+    # Limit the number of parallel jobs
+    while [ "$(ps -eo state= | grep -c 'R')" -ge "$max_jobs" ]; do
+        sleep 1
+    done
 done
+
+# Wait for all background jobs to finish
+wait
 echo "All anatomical scans have been defaced."
 
 
