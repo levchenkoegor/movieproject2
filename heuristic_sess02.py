@@ -35,11 +35,11 @@ def infotodict(
     t1w_5min = create_key('sub-{subject}/{session}/anat/sub-{subject}_{session}_acq-highres_T1w') # specifically for P001706
 
     # Somatotopy
-    func_motor_r1 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-motor_run-001_bold')
-    func_motor_sbref_r1 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-motor_run-001_sbref')
-    func_motor_r2 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-motor_run-002_bold')
-    func_motor_sbref_r2 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-motor_run-002_sbref')
-    fmap_motor_phaserev = create_key('sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-motor_dir-PA_epi')
+    func_motor_r1 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-somatotopy_run-001_bold')
+    func_motor_sbref_r1 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-somatotopy_run-001_sbref')
+    func_motor_r2 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-somatotopy_run-002_bold')
+    func_motor_sbref_r2 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-somatotopy_run-002_sbref')
+    fmap_motor_phaserev = create_key('sub-{subject}/{session}/fmap/sub-{subject}_{session}_acq-somatotopy_dir-PA_epi')
 
     # Retinotopy
     func_pRF_r1 = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-retinotopy_run-001_bold')
