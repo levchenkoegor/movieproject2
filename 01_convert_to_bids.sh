@@ -96,8 +96,8 @@ for subj_id in $subjects; do
 done
 
 echo "Changing the owner of bids_data folder from root to elevchenko and grant permissions to edit files..."
-chown -R elevchenko:elevchenko "${project_path}/bids_data"
-chmod 777 -R "${project_path}/bids_data"
+sudo chown -R elevchenko:elevchenko "${project_path}/bids_data"
+sudo chmod 777 -R "${project_path}/bids_data"
 
 
 ### Step 3
@@ -196,20 +196,21 @@ for subject in $subjects; do
             fi
 
             # Define the output file path
-            output_edf="$dest_path/sub-${subject}_ses-${session_num}_run-${run_id}_task-${task_name}_eyelinkraw.edf"
-            output_asc="$dest_path/sub-${subject}_ses-${session_num}_run-${run_id}_task-${task_name}_eyelinkraw.asc"
+            output_edf="${dest_path}/sub-${subject}_ses-${session_num}_run-${run_id}_task-${task_name}_eyelinkraw.edf"
+            output_asc="${dest_path}/sub-${subject}_ses-${session_num}_run-${run_id}_task-${task_name}_eyelinkraw.asc"
 
             # Check if the file already exists
             if [[ -f "$output_edf" ]]; then
-                echo "File already exists: $output_edf. Overwriting... (made on purpose!)"
+                echo "File already exists: ${output_edf}. Overwriting... (made on purpose!)"
             fi
             if [[ -f "$output_asc" ]]; then
-                echo "File already exists: $output_asc. Overwriting... (made on purpose!)"
+                echo "File already exists: ${output_asc}. Overwriting... (made on purpose!)"
             fi
 
             # Rename and compress each .edf file with the appropriate run number
             echo "Copying and gziping raw eyetracker EDF data for sub-${subject}, ${session_name}, task-${task_name}, run-${run_id}..."
-            gzip -c "$edf_file" > "${output_edf}.gz"
+            cp "$edf_file" "$output_edf"
+            gzip -f "$output_edf"
 
             # Convert to ASCII using eye-link developers kit and compress
             edf2asc "$edf_file" "$output_asc"
