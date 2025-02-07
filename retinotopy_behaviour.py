@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from pathlib import Path
 
 # Define root path (update 'root_path' with your base directory)
@@ -54,6 +53,10 @@ for subject_path in sorted((root_path/'raw_data').glob('sub-*')):
 
 # Convert the list of dictionaries to a DataFrame
 all_data_df = pd.DataFrame(all_data).round(2)
+
+# Filter out bad subjects (were acquired with a bug in the script - no behav data)
+excluded_subjects = {'sub-01', 'sub-03', 'sub-05', 'sub-06', 'sub-07', 'sub-09', 'sub-11', 'sub-12', 'sub-13'}
+all_data_df = all_data_df[~all_data_df['subject_id'].isin(excluded_subjects)]
 
 # Save to CSV
 output_file = output_path / 'retinotopy_accuracy_all.csv'
