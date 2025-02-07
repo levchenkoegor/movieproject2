@@ -7,10 +7,11 @@ export fs_folder=/data/elevchenko/MovieProject2/bids_data/derivatives/freesurfer
 
 # Maximum number of parallel jobs nad threads
 max_jobs=14
-export OMP_NUM_THREADS=2
 
 # Extract subject IDs dynamically from the bids_data folder
-subjects=$(ls -d $data_folder/sub-* | awk -F'/' '{print $NF}' | sed 's/sub-//')
+subjects=$(ls -d $data_folder/sub-* | awk -F'/' '{print $NF}' | sed 's/sub-//' | sort -n)
+echo "The list of subjects to be preprocessed: ${subjects[@]}"
+
 
 # Run AFNI
 for subject_id in $subjects; do
@@ -80,10 +81,11 @@ for subject_id in $subjects; do
       fi
 
       # Run afni_proc.py to create preproc script
+      timestamp=$(date +%Y%m%d_%H%M%S)
       afni_proc.py \
           -subj_id "$subject_id" \
-          -script "$script_path" \
-          -out_dir "$results_path" \
+          -script "$script_path.$timestamp" \
+          -out_dir "$results_path.$timestamp" \
           -dsets "${dsets[@]}" \
           -blocks tcat align tlrc volreg mask blur scale regress \
           -blip_reverse_dset "$data_folder"/sub-"$subject_id"/ses-001/fmap/sub-"$subject_id"_ses-001_acq-func_dir-PA_run-001_epi.nii.gz \
@@ -135,7 +137,7 @@ for subject_id in $subjects; do
           -html_review_style pythonic
 
       # execute preproc script
-      tcsh -xef "$script_path" 2>&1 | tee "$output_path"
+      tcsh -xef "$script_path.$timestamp" 2>&1 | tee "$output_path.$timestamp"
 
       # end timing
       end_time=$(date +%s)
@@ -143,19 +145,21 @@ for subject_id in $subjects; do
       # Calculate elapsed time
       elapsed_time=$((end_time - start_time))
       echo "Processing time for subject $subject_id: ${elapsed_time} seconds"
+
+      # Compress files for this subject
+      echo "Compressing files for subject $subject_id..."
+      find "$results_path.$timestamp" -type f \( -name "*.nii" -o -name "*.BRIK" \) -exec gzip -f "{}" \;
+      echo "Compression for subject $subject_id completed."
     ) &
 
     # Limit the number of parallel jobs
-    while [ "$(ps -eo state= | grep -c 'R')" -ge "$max_jobs" ]; do
-        sleep 1
+    while [ "$(jobs -p | wc -l)" -ge "$max_jobs" ]; do
+        sleep 10
     done
 done
 
 # Wait for all background jobs to finish
 wait
-
-# compressing files
-find "${data_folder}"/derivatives -type f \( -name "*.nii" -o -name "*.BRIK" \) -exec sh -c 'echo "Processing: {}"; gzip -f "{}"' \;
 
 
 ### Useful links to understand the rationale of the analysis:
