@@ -92,8 +92,8 @@ for subject_folder in sorted(raw_data_path.glob("sub-*")):
                     run_id_btf += 1
                 elif idx == 2:
                     if (puls_file.stat().st_size > 2 * 1024 * 1024) and (puls_file.stat().st_size < 2.5 * 1024 * 1024): # pRF
-                        puls_bids_name = f"sub-{subject_id}_ses-{session_bids_id}_run-{run_id_prf:03d}_task-pRF_physioPULS.tsv"
-                        info_bids_name = f"sub-{subject_id}_ses-{session_bids_id}_run-{run_id_prf:03d}_task-pRF_physioInfo.tsv"
+                        puls_bids_name = f"sub-{subject_id}_ses-{session_bids_id}_run-{run_id_prf:03d}_task-retinotopy_physioPULS.tsv"
+                        info_bids_name = f"sub-{subject_id}_ses-{session_bids_id}_run-{run_id_prf:03d}_task-retinotopy_physioInfo.tsv"
                         run_id_prf += 1
                     elif (puls_file.stat().st_size > 1.5 * 1024 * 1024) and (puls_file.stat().st_size < 2 * 1024 * 1024): # tonotopy
                         puls_bids_name = f"sub-{subject_id}_ses-{session_bids_id}_run-{run_id_tono:03d}_task-tonotopy_physioPULS.tsv"

@@ -56,7 +56,7 @@ for subject_path in sorted((root_path/'raw_data').glob('sub-*')):
 all_data_df = pd.DataFrame(all_data).round(2)
 
 # Save to CSV
-output_file = output_path / 'pRF_accuracy_all.csv'
+output_file = output_path / 'retinotopy_accuracy_all.csv'
 all_data_df.to_csv(output_file, index=False)
 
 print(f'Data saved to {output_file}')
