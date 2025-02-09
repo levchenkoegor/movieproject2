@@ -16,7 +16,7 @@ max_jobs=14
 subjects=$(ls -d $data_folder/sub-* | awk -F'/' '{print $NF}' | sed 's/sub-//' | sort -n)
 echo "The list of subjects to be preprocessed: ${subjects[@]}"
 
-
+subjects="01 07" # test
 # Run AFNI
 for subject_id in $subjects; do
 
@@ -41,12 +41,12 @@ for subject_id in $subjects; do
           -out_dir "$results_path.$timestamp" \
           -dsets "$data_folder"/sub-"$subject_id"/ses-002/func/*task-retinotopy_run-001_bold*.nii.gz \
                  "$data_folder"/sub-"$subject_id"/ses-002/func/*task-retinotopy_run-002_bold*.nii.gz \
-                 "$data_folder"/sub-"$subject_id"/ses-002/func/*task-retinotopy_run-002_bold*.nii.gz \
+                 "$data_folder"/sub-"$subject_id"/ses-002/func/*task-retinotopy_run-003_bold*.nii.gz \
           -blocks tcat align tlrc volreg mask blur scale regress \
-          -blip_reverse_dset "$data_folder"/sub-"$subject_id"/ses-002/fmap/*acq-tonotopy*.nii.gz \
+          -blip_reverse_dset "$data_folder"/sub-"$subject_id"/ses-002/fmap/*acq-retinotopy*.nii.gz \
           -tcat_remove_first_trs 8 \
           -radial_correlate_blocks tcat volreg \
-          -copy_anat "$anat_path" \
+          -copy_anat "$data_folder/derivatives/sub-${subject_id}/SSwarper/anatSS.sub-${subject_id}.nii.gz" \
           -anat_has_skull no \
           -anat_follower anat_w_skull anat "$data_folder/derivatives/sub-${subject_id}/SSwarper/anatU.sub-${subject_id}.nii.gz" \
           -anat_follower_ROI aaseg    anat "$fs_folder/sub-${subject_id}/SUMA/aparc.a2009s+aseg.nii.gz" \
@@ -82,7 +82,7 @@ for subject_id in $subjects; do
           -regress_est_blur_epits \
           -regress_est_blur_errts \
           -regress_run_clustsim no \
-          -regress_bandpass 0.01 1 \  # Do we need bandpass?
+          -regress_bandpass 0.01 1 \
           -regress_reml_exec \
           -remove_preproc_files \
           -html_review_style pythonic
