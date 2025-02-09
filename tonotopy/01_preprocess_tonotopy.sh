@@ -102,6 +102,11 @@ for subject_id in $subjects; do
 
       # This tells bbregister to create a data file with all the registration parameters needed to align the T2 image to the associated T1 image.
       bbregister --s "$subject_id" --mov "$results_path.$timestamp"/vr_base.nii.gz --reg "$output_path.$timestamp"/"$subject_id"-tono-register.dat --T2
+
+      # Compress files for this subject
+      echo "Compressing files for subject $subject_id..."
+      find "$results_path.$timestamp" -type f \( -name "*.nii" -o -name "*.BRIK" \) -exec gzip -f "{}" \;
+      echo "Compression for subject $subject_id completed."
     ) &
 
     # Limit the number of parallel jobs
