@@ -3,11 +3,8 @@
 # Paths
 export data_folder=/data/elevchenko/MovieProject2/bids_data
 export stim_folder=/data/elevchenko/MovieProject2/stimuli
+export fs_folder=/data/elevchenko/MovieProject2/bids_data/derivatives/freesurfer
 
-# Set up freesurfer for bbregister command
-export FREESURFER_HOME=/tools/freesurfer
-export SUBJECTS_DIR=/data/elevchenko/MovieProject2/bids_data/derivatives/freesurfer/
-source $FREESURFER_HOME/SetUpFreeSurfer.sh
 
 # Maximum number of parallel jobs nad threads
 max_jobs=14
