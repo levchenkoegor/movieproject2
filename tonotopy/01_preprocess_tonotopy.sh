@@ -16,7 +16,7 @@ max_jobs=14
 subjects=$(ls -d $data_folder/sub-* | awk -F'/' '{print $NF}' | sed 's/sub-//' | sort -n)
 echo "The list of subjects to be preprocessed: ${subjects[@]}"
 
-
+subjects="01 07" # test
 # Run AFNI
 for subject_id in $subjects; do
 
@@ -36,7 +36,8 @@ for subject_id in $subjects; do
 
       # Run afni_proc.py to create preproc script
       timestamp=$(date +%Y%m%d_%H%M%S)
-      afni_proc.py -subj_id "$subject_id" \
+      afni_proc.py \
+          -subj_id "$subject_id" \
           -script "$script_path.$timestamp" \
           -out_dir "$results_path.$timestamp" \
           -dsets "$data_folder"/sub-"$subject_id"/ses-002/func/*task-tonotopy_run-001_bold*.nii.gz \
@@ -45,7 +46,7 @@ for subject_id in $subjects; do
           -blip_reverse_dset "$data_folder"/sub-"$subject_id"/ses-002/fmap/*acq-tonotopy*.nii.gz \
           -tcat_remove_first_trs 8 \
           -radial_correlate_blocks tcat volreg \
-          -copy_anat "$anat_path" \
+          -copy_anat "$data_folder/derivatives/sub-${subject_id}/SSwarper/anatSS.sub-${subject_id}.nii.gz" \
           -anat_has_skull no \
           -anat_follower anat_w_skull anat "$data_folder/derivatives/sub-${subject_id}/SSwarper/anatU.sub-${subject_id}.nii.gz" \
           -anat_follower_ROI aaseg    anat "$fs_folder/sub-${subject_id}/SUMA/aparc.a2009s+aseg.nii.gz" \
@@ -81,7 +82,7 @@ for subject_id in $subjects; do
           -regress_est_blur_epits \
           -regress_est_blur_errts \
           -regress_run_clustsim no \
-          -regress_bandpass 0.01 1 \  # Do we need bandpass?
+          -regress_bandpass 0.01 1 \
           -regress_stim_times "$stim_folder"/task-tonotopy_condition-*Hz.1D \
           -regress_basis 'BLOCK(6.4, 1)' \
           -regress_stim_labels 0175Hz 0247Hz 0350Hz 0495Hz 0700Hz 0990Hz 1400Hz 1980Hz 2800Hz 3960Hz \
@@ -117,4 +118,3 @@ done
 
 # Wait for all background jobs to finish
 wait
-
