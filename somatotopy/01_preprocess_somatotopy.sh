@@ -12,11 +12,12 @@ max_jobs=14
 subjects=$(ls -d $data_folder/sub-* | awk -F'/' '{print $NF}' | sed 's/sub-//' | sort -n)
 echo "The list of subjects to be preprocessed: ${subjects[@]}"
 
-
+subjects="01 07" # test
 # Run AFNI
 for subject_id in $subjects; do
 
     (
+      # Define paths for easier files manipulations
       echo "Processing subject $subject_id"
       subject_folder="$data_folder/derivatives/sub-$subject_id/somatotopy"
       script_path="$subject_folder/proc.sub-$subject_id"
@@ -32,16 +33,16 @@ for subject_id in $subjects; do
       # Run afni_proc.py to create preproc script
       timestamp=$(date +%Y%m%d_%H%M%S)
       afni_proc.py \
-          -subj_id sub-"$subject_id" \
+          -subj_id "$subject_id" \
           -script "$script_path.$timestamp" \
           -out_dir "$results_path.$timestamp" \
-          -dsets "$data_folder"/sub-"$subject_id"/ses-002/func/*task-motor_run-001_bold*.nii.gz \
-                 "$data_folder"/sub-"$subject_id"/ses-002/func/*task-motor_run-002_bold*.nii.gz \
+          -dsets "$data_folder"/sub-"$subject_id"/ses-002/func/*task-somatotopy_run-001_bold*.nii.gz \
+                 "$data_folder"/sub-"$subject_id"/ses-002/func/*task-somatotopy_run-002_bold*.nii.gz \
           -blocks tcat align tlrc volreg mask blur scale regress \
-          -blip_reverse_dset "$data_folder"/sub-"$subject_id"/ses-002/fmap/*_acq-motor_dir-PA*.nii.gz \
+          -blip_reverse_dset "$data_folder"/sub-"$subject_id"/ses-002/fmap/*_acq-somatotopy_dir-PA*.nii.gz \
           -tcat_remove_first_trs 8 \
           -radial_correlate_blocks tcat volreg \
-          -copy_anat "$anat_path" \
+          -copy_anat "$data_folder/derivatives/sub-${subject_id}/SSwarper/anatSS.sub-${subject_id}.nii.gz" \
           -anat_has_skull no \
           -anat_follower anat_w_skull anat "$data_folder/derivatives/sub-${subject_id}/SSwarper/anatU.sub-${subject_id}.nii.gz" \
           -anat_follower_ROI aaseg    anat "$fs_folder/sub-${subject_id}/SUMA/aparc.a2009s+aseg.nii.gz" \
@@ -77,7 +78,7 @@ for subject_id in $subjects; do
           -regress_est_blur_epits \
           -regress_est_blur_errts \
           -regress_run_clustsim no \
-          -regress_bandpass 0.01 1 \  # Do we need to bandpass? Runs are short
+          -regress_bandpass 0.01 1 \
           -regress_opts_3dD -num_stimts 8 -local_times \
                   -stim_label 1 LeftFoot \
                   -stim_label 2 LeftHand \
