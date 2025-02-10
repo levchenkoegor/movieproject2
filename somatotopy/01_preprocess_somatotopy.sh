@@ -6,13 +6,13 @@ export stim_folder=/data/elevchenko/MovieProject2/stimuli
 export fs_folder=/data/elevchenko/MovieProject2/bids_data/derivatives/freesurfer
 
 # Maximum number of parallel jobs nad threads
-max_jobs=14
+max_jobs=8
+export OMP_NUM_THREADS=3
 
 # Extract subject IDs dynamically from the bids_data folder
 subjects=$(ls -d $data_folder/sub-* | awk -F'/' '{print $NF}' | sed 's/sub-//' | sort -n)
 echo "The list of subjects to be preprocessed: ${subjects[@]}"
 
-subjects="01 07" # test
 # Run AFNI
 for subject_id in $subjects; do
 
@@ -96,7 +96,7 @@ for subject_id in $subjects; do
                   -stim_times_AM1 6 "$stim_folder/task-somatotopy_condition-righthand_run-both.1D" 'dmUBLOCK(1)' \
                   -stim_times_AM1 7 "$stim_folder/task-somatotopy_condition-rightface_run-both.1D" 'dmUBLOCK(1)' \
                   -stim_times_AM1 8 "$stim_folder/task-somatotopy_condition-righttongue_run-both.1D" 'dmUBLOCK(1)' \
-                  -gltsym /data/elevchenko/MovieProject2/analysis/somatotopy_GLTsym.1D \
+                  -gltsym "$data_folder/../analysis/somatotopy/somatotopy_GLTsym.1D" \
                   -glt_label 1 'LeftFootVSRightFoot' \
                   -glt_label 2 'LeftHandVSRightHand' \
                   -glt_label 3 'LeftFaceVSRightFace' \
