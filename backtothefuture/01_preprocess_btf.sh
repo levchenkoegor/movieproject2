@@ -6,13 +6,14 @@ export stim_folder=/data/elevchenko/MovieProject2/stimuli
 export fs_folder=/data/elevchenko/MovieProject2/bids_data/derivatives/freesurfer
 
 # Maximum number of parallel jobs nad threads
-max_jobs=14
+max_jobs=8
+export OMP_NUM_THREADS=3
 
 # Extract subject IDs dynamically from the bids_data folder
 subjects=$(ls -d $data_folder/sub-* | awk -F'/' '{print $NF}' | sed 's/sub-//' | sort -n)
 echo "The list of subjects to be preprocessed: ${subjects[@]}"
 
-
+subjects="01 07" # test
 # Run AFNI
 for subject_id in $subjects; do
 
