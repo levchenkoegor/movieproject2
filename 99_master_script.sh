@@ -10,7 +10,7 @@ nohup bash analysis/03_run_sswarper.sh > analysis/logs/03_run_sswarper.out &
 nohup bash analysis/04_run_suma.sh > analysis/logs/04_run_suma.out &
 
 # backtothefuture
-nohup bash analysis/backtothefuture/01_run_preprocessing.sh > analysis/logs/01_run_preprocessing_btf.out &
+nohup bash analysis/backtothefuture/01_preprocess_btf.sh > analysis/logs/01_preprocess_btf.out &
 
 # somatotopy
 nohup bash analysis/somatotopy/01_preprocess_somatotopy.sh > analysis/logs/01_preprocess_somatotopy.out &
