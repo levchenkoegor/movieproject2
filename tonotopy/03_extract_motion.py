@@ -15,8 +15,8 @@ columns = ["Subject", "Task", "Run",
            "Max Roll", "Max Pitch", "Max Yaw", "Max dS", "Max dL", "Max dP"]
 motion_stats = pd.DataFrame(columns=columns)
 
-# Exclude subjects 24 and 36 (if applicable)
-excluded_subjects = {"sub-24", "sub-36"}
+# Exclude subjects
+excluded_subjects = {}
 
 # Ensure we only process "sub-*" folders (avoid group_analysis, etc.)
 subject_list = sorted([
