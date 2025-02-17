@@ -8,9 +8,9 @@ from pathlib import Path
 # Define paths
 base_dir = Path('/data/elevchenko/MovieProject2')
 somatotopy_dir = 'somatotopy'
-fd_file_pattern = 'motion_sub-{subject_id}_enorm.1D'
+fd_file_pattern = 'motion_{subject_id}_enorm.1D'
 
-plots_dir = base_dir / "bids_data/derivatives/plots"
+plots_dir = base_dir / "bids_data/derivatives/group_analysis"
 plots_dir.mkdir(parents=True, exist_ok=True)
 
 # Find subjects with somatotopy data
@@ -94,13 +94,29 @@ for task, file_path in timing_files.items():
 # Initialize variables
 fd_all_subjects = []
 
+
 # Function to load FD for a given subject
 def load_fd(subject_id):
-    fd_path = base_dir / "bids_data/derivatives" / subject_id / somatotopy_dir / f"{subject_id}.results" / fd_file_pattern.format(subject_id=strip_sub_prefix(subject_id))
+    subject_dir = base_dir / "bids_data/derivatives" / subject_id / somatotopy_dir
+    results_pattern = f"{subject_id}.results.*"  # Match timestamped folder
+
+    # Use glob to find results directories
+    results_dirs = sorted(subject_dir.glob(results_pattern), reverse=True)  # Sort to get the latest
+
+    if not results_dirs:
+        print(f"No results directory found for {subject_id}. Expected pattern: {results_pattern}")
+        return []
+
+    latest_results_dir = results_dirs[0]  # Use the most recent results folder
+    fd_filename = fd_file_pattern.format(subject_id=strip_sub_prefix(subject_id))
+    fd_path = latest_results_dir / fd_filename  # Construct full FD file path
+
     if not fd_path.exists():
         print(f"FD file not found for {subject_id}: {fd_path}")
         return []
+
     return np.loadtxt(fd_path)
+
 
 # Collect FD values for all subjects
 for subject_id in subject_list:
@@ -127,7 +143,7 @@ plt.xlim(-0.05, 1.2)
 plt.ylabel("Percentage (%)")
 plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.legend(loc='upper right')
-plt.savefig(plots_dir / "task-somatotopy_overall_fd_distribution_percentage.png")
+plt.savefig(plots_dir / "somatotopy" / "task-somatotopy_overall_fd_distribution_percentage.png")
 plt.close()
 
 # Task-based FD analysis
@@ -167,7 +183,7 @@ plt.xlabel("Conditions")
 plt.ylabel("Framewise Displacement (mm)")
 plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.tight_layout()
-plt.savefig(plots_dir / "task-somatotopy_condition_specific_fd.png")
+plt.savefig(plots_dir / "somatotopy" / "task-somatotopy_condition_specific_fd.png")
 plt.close()
 
 print('Plots were saved')
