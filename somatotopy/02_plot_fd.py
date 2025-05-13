@@ -177,7 +177,7 @@ plt.boxplot(task_fd_list, widths=0.1, showfliers=False, patch_artist=True,
             medianprops={'color': 'red'})
 
 plt.xticks(positions, list(task_timing_info.keys()), rotation=45)
-plt.ylim(-0.05, 1.2)  # Adjust ylim dynamically
+plt.ylim(-0.05, 0.8)  # Adjust ylim dynamically
 plt.title("Condition-Specific Framewise Displacement")
 plt.xlabel("Conditions")
 plt.ylabel("Framewise Displacement (mm)")

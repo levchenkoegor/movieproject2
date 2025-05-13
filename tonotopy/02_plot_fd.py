@@ -95,7 +95,7 @@ plt.boxplot([fd_runs["Run 1"], fd_runs["Run 2"]], widths=0.1, showfliers=False, 
             medianprops={'color': 'red'})
 
 plt.xticks(positions, run_labels)
-plt.ylim(-0.05, 1.2)  # Adjust ylim dynamically
+plt.ylim(-0.05, 0.8)  # Adjust ylim dynamically
 plt.title("Framewise Displacement by Run")
 plt.xlabel("Runs")
 plt.ylabel("Framewise Displacement (mm)")

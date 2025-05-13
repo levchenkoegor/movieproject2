@@ -123,7 +123,7 @@ if len(fd_all_subjects) > 0:
 else:
     print("No FD values available for distribution plot.")
 
-# **Violin Plot: FD for Each Run**
+# Violin Plot: FD for Each Run**
 plt.figure(figsize=(12, 8))
 
 positions = np.arange(1, 4)  # Positions for Run 1, Run 2, Run 3
@@ -135,7 +135,7 @@ plt.boxplot([fd_runs["Run 1"], fd_runs["Run 2"], fd_runs["Run 3"]], widths=0.1, 
             medianprops={'color': 'red'})
 
 plt.xticks(positions, run_labels)
-plt.ylim(-0.05, 1.2)  # Adjust ylim dynamically
+plt.ylim(-0.05, 0.8)  # Adjust ylim dynamically
 plt.title("Framewise Displacement by Run")
 plt.xlabel("Runs")
 plt.ylabel("Framewise Displacement (mm)")
