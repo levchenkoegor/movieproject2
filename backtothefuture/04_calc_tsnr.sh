@@ -48,4 +48,5 @@ for subj in $subjects; do
     done
 done
 
-find data/elevchenko/MovieProject2/bids_data/derivatives -type f \( -name "*.nii" -o -name "*.BRIK" \) -exec gzip -f "{}" \;
+# Zip outputs
+find /data/elevchenko/MovieProject2/bids_data/derivatives -type f \( -name "*.nii" -o -name "*.BRIK" \) -exec gzip -f "{}" \;
