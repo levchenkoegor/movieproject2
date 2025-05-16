@@ -31,17 +31,17 @@ for subj in $subjects; do
         echo "Computing unmasked tSNR for sub-${subj}, run-r${run}..."
         # Compute unmasked tSNR
         3dTstat -tsnr \
-            -prefix "${res_dir}/tsnr.r${run}.${subj}" \
+            -prefix "${res_dir}/tsnr.r${run}.${subj}.nii.gz" \
             "${res_dir}/pb04.${subj}.r${run}.scale+tlrc"
 
         # Compute masked tSNR if mask exists
         mask_file="${res_dir}/mask_epi_anat.${subj}+tlrc.HEAD"
         if [ -f "$mask_file" ]; then
             echo "Computing masked tSNR for sub-${subj}, run-r${run}..."
-            3dcalc -a "${res_dir}/tsnr.r${run}.${subj}+tlrc" \
+            3dcalc -a "${res_dir}/tsnr.r${run}.${subj}.nii.gz" \
                    -b "${res_dir}/mask_epi_anat.${subj}+tlrc" \
                    -expr 'a*step(b)' \
-                   -prefix "${res_dir}/tsnr.r${run}.${subj}.masked"
+                   -prefix "${res_dir}/tsnr.r${run}.${subj}.masked.nii.gz"
         else
             echo "No mask found for sub-${subj}, skipping mask application."
         fi
