@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Paths
-export data_folder=/data/elevchenko/MovieProject2/bids_data
-export stim_folder=/data/elevchenko/MovieProject2/stimuli
-export fs_folder=/data/elevchenko/MovieProject2/bids_data/derivatives/freesurfer
+export data_folder=/egor2/egor/MovieProject2/bids_data
+export stim_folder=/egor2/egor/MovieProject2/stimuli
+export fs_folder=/egor2/egor/MovieProject2/bids_data/derivatives/freesurfer
 
-# Maximum number of parallel jobs nad threads
+# Max number of parallel jobs and threads
 max_jobs=8
 export OMP_NUM_THREADS=3
 
@@ -13,7 +13,6 @@ export OMP_NUM_THREADS=3
 subjects=$(ls -d $data_folder/sub-* | awk -F'/' '{print $NF}' | sed 's/sub-//' | sort -n)
 echo "The list of subjects to be preprocessed: ${subjects[@]}"
 
-subjects="01 07" # test
 # Run AFNI
 for subject_id in $subjects; do
 
@@ -133,7 +132,7 @@ for subject_id in $subjects; do
           -regress_opts_3dD -num_stimts 1 -local_times \
               -stim_label 1 Speech \
               -stim_times_AM1 1 "$stim_file" 'dmUBLOCK(1)' \
-          -regress_reml_exec \
+          #-regress_reml_exec \ # requires too much RAM (job is usually killed)
           -remove_preproc_files \
           -html_review_style pythonic
 
