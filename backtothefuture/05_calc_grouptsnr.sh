@@ -27,5 +27,5 @@ echo "Found $n subject tSNR maps."
 3dTstat -mean -prefix "$deriv_root"/group_analysis/backtothefuture/tsnr_group_mean.nii.gz tsnr_group_4D.nii.gz
 3dTstat -stdev -prefix "$deriv_root"/group_analysis/backtothefuture/tsnr_group_std.nii.gz tsnr_group_4D.nii.gz
 
-# Optional: remove intermediate file
+# remove intermediate file
 rm tsnr_group_4D.nii.gz $tsnr_list
