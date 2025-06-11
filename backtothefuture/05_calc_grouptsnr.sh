@@ -21,7 +21,7 @@ n=$(wc -l < $tsnr_list)
 echo "Found $n subject tSNR maps."
 
 # Merge into 4D file
-3dTcat -prefix tsnr_group_4D.nii.gz $(cat $tsnr_list)
+3dTcat -prefix tsnr_group_4D.nii.gz $(cat $tsnr_list) -tr 1.5
 
 # Compute voxelwise mean and std
 3dTstat -mean -prefix "$deriv_root"/group_analysis/backtothefuture/tsnr_group_mean.nii.gz tsnr_group_4D.nii.gz
