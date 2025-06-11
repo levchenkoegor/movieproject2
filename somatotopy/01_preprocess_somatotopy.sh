@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Paths
-export data_folder=/data/elevchenko/MovieProject2/bids_data
-export stim_folder=/data/elevchenko/MovieProject2/stimuli
-export fs_folder=/data/elevchenko/MovieProject2/bids_data/derivatives/freesurfer
+export data_folder=/egor2/egor/MovieProject2/bids_data
+export stim_folder=/egor2/egor/MovieProject2/stimuli
+export fs_folder=/egor2/egor/MovieProject2/bids_data/derivatives/freesurfer
 
 # Maximum number of parallel jobs nad threads
 max_jobs=8
