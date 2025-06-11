@@ -49,31 +49,21 @@ for subj in $subjects; do
         fi
     done
 
-    # ------------- CONCATENATED tSNR -------------
-    echo "Concatenating runs and computing total tSNR for sub-${subj}..."
+    # ------------- CONCATENATED tSNR on all_runs -------------
+    echo "Computing total tSNR for sub-${subj}..."
 
-    # Build list of valid input files
-    scale_inputs=()
-    for run in $runs; do
-        scale_file="${res_dir}/pb04.${subj}.r${run}.scale+tlrc.HEAD"
-        if [ -f "$scale_file" ]; then
-            scale_inputs+=("${res_dir}/pb04.${subj}.r${run}.scale+tlrc")
-        fi
-    done
+    3dTstat -tsnr \
+      -prefix "${res_dir}/tsnr.all_runs.${subj}.nii.gz" \
+      "${res_dir}/all_runs.${subj}+tlrc"
 
-    if [ "${#scale_inputs[@]}" -gt 1 ]; then
-
-      3dTcat -prefix "${res_dir}/pb04.${subj}.all_runs.scale+tlrc" "${scale_inputs[@]}"
-      3dTstat -tsnr -prefix "${res_dir}/tsnr.all_runs.${subj}.nii.gz" \
-              "${res_dir}/pb04.${subj}.all_runs.scale+tlrc"
-
-      # Masked version
-      3dcalc -a "${res_dir}/tsnr.all_runs.${subj}.nii.gz" \
-             -b "$mask_file" \
-             -expr 'a*step(b)' \
-             -prefix "${res_dir}/tsnr.all_runs.${subj}.masked.nii.gz"
+    # Masked version (only if mask exists)
+    if [ -f "$mask_file" ]; then
+        3dcalc -a "${res_dir}/tsnr.all_runs.${subj}.nii.gz" \
+               -b "$mask_file" \
+               -expr 'a*step(b)' \
+               -prefix "${res_dir}/tsnr.all_runs.${subj}.masked.nii.gz"
     else
-        echo "Not enough valid runs to concatenate for sub-${subj}, skipping total tSNR."
+        echo "No mask found for sub-${subj}, skipping masked total tSNR."
     fi
 done
 
