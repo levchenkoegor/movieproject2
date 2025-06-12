@@ -1,26 +1,29 @@
 #!/bin/bash
 
 # Paths and Parameters
-data_dir="/data/elevchenko/MovieProject2/bids_data/derivatives"
+data_dir="/egor2/egor/MovieProject2/bids_data/derivatives"
 output_dir="$data_dir/group_analysis/backtothefuture/isc"
-mask_dir="$output_dir/masks"
 isc_dir="$output_dir/ISC_maps"
 
 # Create necessary directories
-mkdir -p $mask_dir $isc_dir
+mkdir -p "$isc_dir"
 
-# Detect subjects automatically
-#subjects=($(ls $data_dir | grep "sub-"))
-subjects=("sub-07" "sub-08")
+# Detect subjects automatically (skip 24 and 36 since potential alignment issues)
+subjects=()
+for s in $(ls "$data_dir" | grep "sub-"); do
+  if [[ "$s" != "sub-01" && "$s" != "sub-02" && "$s" != "sub-03" && "$s" != "sub-24" && "$s" != "sub-36" ]]; then
+    subjects+=("$s")
+  fi
+done
 
 # Check and prepare DataTable
 data_table="$output_dir/DataTable_ISC.txt"
-echo -e "Subj1\tSubj2\tgrp\tInputFile" > $data_table
+echo -e "Subj1\tSubj2\tgrp\tInputFile" > "$data_table"
 
 # Function to find the correct 'sub-{ID}.results' folder dynamically
 find_results_folder() {
   subj=$1
-  results_path=$(ls -d ${data_dir}/${subj}/backtothefuture/${subj}.results.* 2>/dev/null | head -n 1)
+  results_path=$(ls -d "${data_dir}/${subj}/backtothefuture/${subj}.results."* 2>/dev/null | head -n 1)
 
   if [[ -z "$results_path" ]]; then
     echo "ERROR: No results folder found for $subj in $data_dir" >&2
@@ -34,13 +37,13 @@ find_results_folder() {
 isc_calculation() {
   s1=$1
   s2=$2
-  s1_id=$(echo $s1 | sed 's/sub-//')
-  s2_id=$(echo $s2 | sed 's/sub-//')
+  s1_id=$(echo "$s1" | sed 's/sub-//')
+  s2_id=$(echo "$s2" | sed 's/sub-//')
 
   results_s1=$(find_results_folder "$s1")
   results_s2=$(find_results_folder "$s2")
 
-  if [[ $? -ne 0 ]]; then
+  if [[ $? -ne 0 || -z "$results_s1" || -z "$results_s2" ]]; then
     echo "Skipping ISC calculation for $s1 and $s2 due to missing results folders."
     return
   fi
@@ -48,40 +51,49 @@ isc_calculation() {
   isc_output="$isc_dir/ISC_${s1}_${s2}.nii.gz"
   s1_file="${results_s1}/all_runs.${s1_id}+tlrc.BRIK.gz"
   s2_file="${results_s2}/all_runs.${s2_id}+tlrc.BRIK.gz"
-  s1_mask="${mask_dir}/${s1}_mask.nii.gz"
+  s1_mask="${results_s1}/full_mask.${s1_id}+tlrc.BRIK.gz"
 
   if [[ -f "$s1_file" && -f "$s2_file" && -f "$s1_mask" ]]; then
     if [[ ! -f "$isc_output" ]]; then
       echo "Running 3dTcorrelate for $s1 and $s2"
       3dTcorrelate -pearson -polort -1 -Fisher \
-        -mask $s1_mask \
         -prefix $isc_output \
         $s1_file'[0..$]' $s2_file'[0..$]'
     fi
-    echo -e "$s1\t$s2\t1\t$isc_output" >> $data_table
+    echo -e "$s1\t$s2\t1\t$isc_output" >> "$data_table"
   else
     echo "Missing files for $s1 or $s2. Skipping pair."
   fi
 }
 
-# Create group-level mask
-cd $mask_dir
-3dMean -prefix "$output_dir/average_T1w_mask.nii.gz" full_mask.*+tlrc*.HEAD
+# Create group-level average mask
+echo "Creating group-level average mask..."
+mask_inputs=()
+for subj in "${subjects[@]}"; do
+  subj_id=$(echo "$subj" | sed 's/sub-//')
+  results_path=$(find_results_folder "$subj")
+  full_mask="${results_path}/full_mask.${subj_id}+tlrc.HEAD"
+  if [[ -f "$full_mask" ]]; then
+    mask_inputs+=("$full_mask")
+  else
+    echo "Warning: Missing mask for $subj, skipping."
+  fi
+done
+
+3dMean -prefix "$output_dir/average_T1w_mask.nii.gz" "${mask_inputs[@]}"
 
 # Run ISC calculations for unique subject pairs
 for ((i = 0; i < ${#subjects[@]}; i++)); do
   for ((j = i + 1; j < ${#subjects[@]}; j++)); do
-    s1=${subjects[$i]}
-    s2=${subjects[$j]}
-    isc_calculation "$s1" "$s2"
+    isc_calculation "${subjects[$i]}" "${subjects[$j]}"
   done
 done
 
 # Group-level ISC analysis
-cd $output_dir
-3dISC -prefix ISC_group -jobs 8 \
-  -model 'grp+(1|Subj1)+(1|Subj2)' -qVars grp \
+3dISC -prefix "$output_dir"/ISC_group \
+  -jobs 8 \
+  -model '1+(1|Subj1)+(1|Subj2)' \
   -mask "$output_dir/average_T1w_mask.nii.gz" \
   -dataTable @$data_table
 
-echo "ISC analysis complete. Results saved to $output_dir."
+echo "ISC analysis complete. Results saved to $output_dir"
