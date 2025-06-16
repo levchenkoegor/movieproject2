@@ -8,10 +8,10 @@ isc_dir="$output_dir/ISC_maps"
 # Create necessary directories
 mkdir -p "$isc_dir"
 
-# Detect subjects automatically (skip 24 and 36 since potential alignment issues)
+# Detect subjects automatically (skip 01, 02, 03, 10, 24 and 36 since potential alignment issues)
 subjects=()
 for s in $(ls "$data_dir" | grep "sub-"); do
-  if [[ "$s" != "sub-01" && "$s" != "sub-02" && "$s" != "sub-03" && "$s" != "sub-24" && "$s" != "sub-36" ]]; then
+  if [[ "$s" != "sub-01" && "$s" != "sub-02" && "$s" != "sub-03" && "$s" != "sub-10"  && "$s" != "sub-24" && "$s" != "sub-36" ]]; then
     subjects+=("$s")
   fi
 done
@@ -93,7 +93,7 @@ done
 3dISC -prefix "$output_dir"/ISC_group \
   -jobs 8 \
   -model '1+(1|Subj1)+(1|Subj2)' \
-  -mask "$output_dir/average_T1w_mask.nii.gz" \
+  -mask "$output_dir"/average_T1w_mask.nii.gz \
   -dataTable @$data_table
 
 echo "ISC analysis complete. Results saved to $output_dir"
