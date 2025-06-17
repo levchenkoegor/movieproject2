@@ -32,6 +32,10 @@ disp(['Found ' num2str(length(subjects)) ' subjects with retinotopy data.'])
 
 for s = 1:length(subjects)
     SubID = subjects{s};
+    saveDir = fullfile(p.FS_subDIR, SubID, 'retinotopy');
+    if ~exist(saveDir, 'dir')
+        mkdir(saveDir);
+    end
     subjFolder = fullfile(p.retinoDIR, SubID, 'retinotopy');
 
     % === Find timestamped folder
@@ -50,7 +54,7 @@ for s = 1:length(subjects)
 
     % === Locate MGH files
     files = dir(fullfile(fMRIFolder, ['*' Prefix '*.mgh']));
-    scanlist = fullfile({files.folder}, {files.name})';
+    scanlist = fullfile({files.folder}, {files.name});
 
     if isempty(scanlist)
         warning(['No MGH files found for ' SubID ', skipping.']);
@@ -83,10 +87,10 @@ for s = 1:length(subjects)
         cd(fMRIFolder)
         samsrf_mgh2srf(funimg, hemsurf, nrmls, avrgd, nsceil, anatpath)
 
-        % Rename output to *_avg.mat
+        % Move output directly to freesrufer subjFolder (retinotopy/)
         [~, first_name, ~] = fileparts(funimg{1});
         defaultOutFile = [first_name '.mat'];
-        newOutFile = [hemlabel{hem} '_' Prefix '_' SubID '_avg.mat'];
+        newOutFile = fullfile(saveDir, [hemlabel{hem} '_' Prefix '_' SubID '_avg.mat']);
         if exist(defaultOutFile, 'file')
             movefile(defaultOutFile, newOutFile);
         else
@@ -96,12 +100,12 @@ for s = 1:length(subjects)
     end
 
     % === Bilateral .mat
-    Lfile = fullfile(fMRIFolder, ['lh_' Prefix '_' SubID '_avg.mat']);
-    Rfile = fullfile(fMRIFolder, ['rh_' Prefix '_' SubID '_avg.mat']);
+    Lfile = fullfile(saveDir, ['lh_' Prefix '_' SubID '_avg.mat']);
+    Rfile = fullfile(saveDir, ['rh_' Prefix '_' SubID '_avg.mat']);
     if exist(Lfile, 'file') && exist(Rfile, 'file')
         SrfL = load(Lfile); SrfR = load(Rfile);
         Srf = samsrf_bilat_srf(SrfL.Srf, SrfR.Srf);
-        save(fullfile(fMRIFolder, ['bi_' Prefix '_' SubID '_avg.mat']), 'Srf', '-v7.3');
+        save(fullfile(saveDir, ['bi_' Prefix '_' SubID '_avg.mat']), 'Srf', '-v7.3');
     else
         warning(['Bilateral merge skipped for ' SubID ', one hemisphere missing.']);
     end
