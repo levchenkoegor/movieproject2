@@ -12,6 +12,9 @@ p.retinoDIR = [p.Home '/bids_data/derivatives'];
 p.SamSrf = '/egor2/egor/MovieProject2/utils/SamSrf_V7.13';
 addpath(genpath(p.SamSrf))
 
+subjects = {'sub-01', 'sub-02', 'sub-03'};
+disp(['Found ' num2str(length(subjects)) ' subjects with retinotopy data.'])
+
 Prefix = 'vol2surf';
 Bilateral = 1;
 hemlabel = {'lh', 'rh'};
@@ -27,8 +30,6 @@ for i = 1:length(sub_dirs)
         subjects{end+1} = sub_dirs(i).name;
     end
 end
-subjects = {'sub-01', 'sub-02'};  % TEST
-disp(['Found ' num2str(length(subjects)) ' subjects with retinotopy data.'])
 
 for s = 1:length(subjects)
     SubID = subjects{s};
@@ -50,7 +51,7 @@ for s = 1:length(subjects)
     TimestampFolder = ts_dirs(idx_latest).name;
     fMRIFolder = fullfile(subjFolder, TimestampFolder);
     surffile = fullfile(p.FS_subDIR, SubID, 'surf');
-    anatpath = fullfile(p.FS_subDIR, SubID, 'mri');
+    anatpath = '../anatomy/';
 
     % === Locate MGH files
     files = dir(fullfile(fMRIFolder, ['*' Prefix '*.mgh']));
@@ -104,12 +105,15 @@ for s = 1:length(subjects)
     Rfile = fullfile(saveDir, ['rh_' Prefix '_' SubID '_avg.mat']);
     if exist(Lfile, 'file') && exist(Rfile, 'file')
         SrfL = load(Lfile); SrfR = load(Rfile);
+        cd(fMRIFolder)
         Srf = samsrf_bilat_srf(SrfL.Srf, SrfR.Srf);
+        cd(origDir)
         save(fullfile(saveDir, ['bi_' Prefix '_' SubID '_avg.mat']), 'Srf', '-v7.3');
     else
         warning(['Bilateral merge skipped for ' SubID ', one hemisphere missing.']);
     end
 
+    movefile([fMRIFolder '/../anatomy/'], [surffile '/../']);
     disp(['..... DONE with ' SubID ' .....']);
 end
 
