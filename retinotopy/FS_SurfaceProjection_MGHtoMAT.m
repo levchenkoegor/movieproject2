@@ -12,11 +12,6 @@ p.retinoDIR = [p.Home '/bids_data/derivatives'];
 p.SamSrf = '/egor2/egor/MovieProject2/utils/SamSrf_V7.13';
 addpath(genpath(p.SamSrf))
 
-subjects = {'sub-01', 'sub-02', 'sub-03', 'sub-05', 'sub-06', 'sub-07', 'sub-08'};
-subjects = {'sub-01', 'sub-02'};
-
-disp(['Found ' num2str(length(subjects)) ' subjects with retinotopy data.'])
-
 Prefix = 'vol2surf';
 Bilateral = 1;
 hemlabel = {'lh', 'rh'};
@@ -32,6 +27,9 @@ for i = 1:length(sub_dirs)
         subjects{end+1} = sub_dirs(i).name;
     end
 end
+
+%subjects = {'sub-01', 'sub-02', 'sub-03', 'sub-05', 'sub-06', 'sub-07', 'sub-08'}; % TEST
+disp(['Found ' num2str(length(subjects)) ' subjects with retinotopy data.'])
 
 for s = 1:length(subjects)
     SubID = subjects{s};
