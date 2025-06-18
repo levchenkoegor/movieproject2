@@ -47,8 +47,10 @@ for s = 1:length(subjects)
     end
 
     % Use the most recent one
-    [~, idx_latest] = max([ts_dirs.datenum]);
-    TimestampFolder = ts_dirs(idx_latest).name;
+    % Sort folders alphabetically
+    names = {ts_dirs.name};
+    sorted_names = sort(names);  % alphabetical = chronological
+    TimestampFolder = sorted_names{end};
     fMRIFolder = fullfile(subjFolder, TimestampFolder);
     surffile = fullfile(p.FS_subDIR, SubID, 'surf');
     anatpath = '../anatomy/';
