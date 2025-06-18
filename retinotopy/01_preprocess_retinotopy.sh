@@ -1,9 +1,14 @@
 #!/bin/bash
 
 # Paths
-export data_folder=/data/elevchenko/MovieProject2/bids_data
-export stim_folder=/data/elevchenko/MovieProject2/stimuli
-export fs_folder=/data/elevchenko/MovieProject2/bids_data/derivatives/freesurfer
+export data_folder=/egor2/egor/MovieProject2/bids_data
+export stim_folder=/egor2/egor/MovieProject2/stimuli
+export fs_folder=/egor2/egor/MovieProject2/bids_data/derivatives/freesurfer
+
+# Setup freesurfer and directories
+export FREESURFER_HOME=/tools/freesurfer
+source $FREESURFER_HOME/SetUpFreeSurfer.sh
+export SUBJECTS_DIR=/egor2/egor/MovieProject2/bids_data/derivatives/freesurfer
 
 # Maximum number of parallel jobs nad threads
 max_jobs=8
@@ -11,7 +16,12 @@ export OMP_NUM_THREADS=3
 
 # Extract subject IDs dynamically from the bids_data folder
 subjects=$(ls -d $data_folder/sub-* | awk -F'/' '{print $NF}' | sed 's/sub-//' | sort -n)
+subjects="01 02 03 05 06"
 echo "The list of subjects to be preprocessed: ${subjects[@]}"
+
+# subjects="01 02 03 05 06 07 08 09 10" # DONE
+# subjects="11 12 13 14 16 17 18 19 20 21 22" # DONE
+# subjects="23 24 25 26 27 29 30 31 32 33 35 36 37 38 39 40 42 43 44" # DONE
 
 # Run AFNI
 for subject_id in $subjects; do
@@ -38,52 +48,35 @@ for subject_id in $subjects; do
           -dsets "$data_folder"/sub-"$subject_id"/ses-002/func/*task-retinotopy_run-001_bold*.nii.gz \
                  "$data_folder"/sub-"$subject_id"/ses-002/func/*task-retinotopy_run-002_bold*.nii.gz \
                  "$data_folder"/sub-"$subject_id"/ses-002/func/*task-retinotopy_run-003_bold*.nii.gz \
-          -blocks tcat align tlrc volreg mask blur scale regress \
+          -blocks tcat volreg scale \
           -blip_reverse_dset "$data_folder"/sub-"$subject_id"/ses-002/fmap/*acq-retinotopy*.nii.gz \
           -tcat_remove_first_trs 8 \
           -radial_correlate_blocks tcat volreg \
           -copy_anat "$data_folder/derivatives/sub-${subject_id}/SSwarper/anatSS.sub-${subject_id}.nii.gz" \
-          -anat_has_skull no \
-          -anat_follower anat_w_skull anat "$data_folder/derivatives/sub-${subject_id}/SSwarper/anatU.sub-${subject_id}.nii.gz" \
-          -anat_follower_ROI aaseg    anat "$fs_folder/sub-${subject_id}/SUMA/aparc.a2009s+aseg.nii.gz" \
-          -anat_follower_ROI aeseg    epi  "$fs_folder/sub-${subject_id}/SUMA/aparc.a2009s+aseg.nii.gz" \
-          -anat_follower_ROI fsvent   epi  "$fs_folder/sub-${subject_id}/SUMA/fs_ap_latvent.nii.gz" \
-          -anat_follower_ROI fswm     epi  "$fs_folder/sub-${subject_id}/SUMA/fs_ap_wm.nii.gz" \
-          -anat_follower_ROI fsgm     epi  "$fs_folder/sub-${subject_id}/SUMA/aparc+aseg_REN_gm.nii.gz" \
-          -anat_follower_erode fsvent fswm \
-          -align_opts_aea -cost lpc+ZZ -giant_move -check_flip \
-          -tlrc_base MNI152_2009_template_SSW.nii.gz \
-          -tlrc_NL_warp \
-          -tlrc_NL_warped_dsets \
-            "$data_folder/derivatives/sub-${subject_id}/SSwarper/anatQQ.sub-${subject_id}.nii.gz" \
-            "$data_folder/derivatives/sub-${subject_id}/SSwarper/anatQQ.sub-${subject_id}.aff12.1D" \
-            "$data_folder/derivatives/sub-${subject_id}/SSwarper/anatQQ.sub-${subject_id}_WARP.nii.gz" \
           -volreg_align_to MIN_OUTLIER \
           -volreg_post_vr_allin yes \
           -volreg_pvra_base_index MIN_OUTLIER \
-          -volreg_align_e2a \
-          -volreg_tlrc_warp \
           -volreg_opts_vr -twopass -twodup -maxdisp1D mm'.r$run' \
           -volreg_compute_tsnr yes \
-          -mask_opts_automask -clfrac 0.10 \
-          -mask_epi_anat yes \
-          -blur_to_fwhm -blur_size 4 \
-          -regress_motion_per_run \
-          -regress_ROI_PC fsvent 3 \
-          -regress_ROI_PC_per_run fsvent \
-          -regress_make_corr_vols aeseg fsvent \
-          -regress_anaticor_fast \
-          -regress_anaticor_label fswm \
-          -regress_apply_mot_types demean deriv \
-          -regress_est_blur_epits \
-          -regress_est_blur_errts \
-          -regress_run_clustsim no \
-          -regress_bandpass 0.01 1 \
-          -regress_reml_exec \
-          -remove_preproc_files \
           -html_review_style pythonic
 
       tcsh -xef "$script_path.$timestamp" 2>&1 | tee "$output_path.$timestamp"
+
+      # Convert BRIK to nifti
+      3dAFNItoNIFTI -prefix "$results_path.$timestamp"/vr_base_min_outlier+orig.nii.gz "$results_path.$timestamp"/vr_base_min_outlier+orig.BRIK
+
+      # This tells bbregister to create a data file with all the registration parameters needed to align the T2 image to the associated T1 image
+      bbregister --s sub-"$subject_id" --mov "$results_path.$timestamp"/vr_base_min_outlier+orig.nii.gz --reg "$results_path.$timestamp"/"$subject_id"-register.dat --T2
+
+      # mri_vol2surf
+      runs="01 02 03"
+      for run in $runs; do
+        # Convert pb02* AFNI to NIFTI format
+        3dAFNItoNIFTI -prefix "$results_path.$timestamp"/pb02.${subject_id}.r${run}.volreg+orig.nii.gz "$results_path.$timestamp"/pb02.${subject_id}.r${run}.volreg+orig.BRIK
+
+        mri_vol2surf --mov "$results_path.$timestamp"/pb02.${subject_id}.r${run}.volreg+orig.nii.gz --reg "$results_path.$timestamp"/"$subject_id"-register.dat --trgsubject sub-"$subject_id" --hemi rh --o "$results_path.$timestamp"/vol2surf_rh_sub-${subject_id}_run-${run}.mgh --projfrac 0.5 --surf-fwhm 3
+        mri_vol2surf --mov "$results_path.$timestamp"/pb02.${subject_id}.r${run}.volreg+orig.nii.gz --reg "$results_path.$timestamp"/"$subject_id"-register.dat --trgsubject sub-"$subject_id" --hemi lh --o "$results_path.$timestamp"/vol2surf_lh_sub-${subject_id}_run-${run}.mgh --projfrac 0.5 --surf-fwhm 3
+      done
 
       # Compress files for this subject
       echo "Compressing files for subject $subject_id..."
