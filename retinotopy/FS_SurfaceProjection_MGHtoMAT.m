@@ -12,7 +12,9 @@ p.retinoDIR = [p.Home '/bids_data/derivatives'];
 p.SamSrf = '/egor2/egor/MovieProject2/utils/SamSrf_V7.13';
 addpath(genpath(p.SamSrf))
 
-subjects = {'sub-01', 'sub-02', 'sub-03', 'sub-05', 'sub-06'};
+subjects = {'sub-01', 'sub-02', 'sub-03', 'sub-05', 'sub-06', 'sub-07', 'sub-08'};
+subjects = {'sub-01', 'sub-02'};
+
 disp(['Found ' num2str(length(subjects)) ' subjects with retinotopy data.'])
 
 Prefix = 'vol2surf';
@@ -70,7 +72,7 @@ for s = 1:length(subjects)
         idx = 0;
         for i = 1:length(scanlist)
             [~, name, ~] = fileparts(scanlist{i});
-            if startsWith(name, hemlabel{hem})
+            if startsWith(name, ['vol2surf_' hemlabel{hem}])
                 idx = idx + 1;
                 funimg{idx} = scanlist{i};
             end
