@@ -11,7 +11,7 @@ source $FREESURFER_HOME/SetUpFreeSurfer.sh
 export SUBJECTS_DIR=/egor2/egor/MovieProject2/bids_data/derivatives/freesurfer
 
 # Maximum number of parallel jobs nad threads
-max_jobs=4
+max_jobs=8
 export OMP_NUM_THREADS=3
 
 # Subjects with mincost > 0.45
