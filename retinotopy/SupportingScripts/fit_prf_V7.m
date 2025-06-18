@@ -41,7 +41,8 @@ Model.Param3 = 2 .^ (-5.6 : 0.2 : 1); % Sigma search grid
 Model.Param4 = 0; % Unused
 Model.Param5 = 0; % Unused
 
-SrfFiles = [Hemis '_' p.ppscanNames{1}];
+%SrfFiles = [Hemis '_' p.ppscanNames{1}];
+SrfFiles = [Hemis '_vol2surf_' p.subNames '_avg.mat'];
 Roi = char(fullfile(prfFolder, [Hemis '_occ']));
 
 %% Fit pRF model
