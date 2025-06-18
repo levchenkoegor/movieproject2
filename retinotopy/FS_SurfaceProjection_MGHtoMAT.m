@@ -115,7 +115,20 @@ for s = 1:length(subjects)
         warning(['Bilateral merge skipped for ' SubID ', one hemisphere missing.']);
     end
 
-    movefile([fMRIFolder '/../anatomy/'], [surffile '/../']);
+    % Move anatomy dir to freesrufer dir
+    src_anat = fullfile(fMRIFolder, '..', 'anatomy');
+    dst_anat = fullfile(surffile, '..', 'anatomy');
+
+    if exist(dst_anat, 'dir')
+        disp(['Target anatomy folder already exists for ' SubID ', skipping move.']);
+    else
+        try
+            movefile(src_anat, dst_anat);
+        catch ME
+            warning(['Failed to move anatomy folder for ' SubID ': ' ME.message]);
+        end
+    end
+
     disp(['..... DONE with ' SubID ' .....']);
 end
 
