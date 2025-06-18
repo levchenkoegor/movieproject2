@@ -28,8 +28,8 @@ disp(['Subject: ' p.subNames])
 
 nRuns = str2double(nRuns);
 for i = 1:nRuns
-    p.scanNames{i} = sprintf('pb02.%s.r0%d.volreg+orig', SubID, i); % change later
-    p.ppscanNames{i} = p.scanNames{i};
+    p.scanNames{i} = sprintf('%s_task_retinotopy', SubID); % just a filename (not actually used)
+    p.ppscanNames{i} = sprintf('pb02.%s.r0%d.volreg+orig', SubID, i); % just a filename (not actually used)
 end
 
 % p.batchFuntion = 'batch_job(b)';
