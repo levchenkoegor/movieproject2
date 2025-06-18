@@ -7,8 +7,8 @@ function run_pRF_V7(SubID)
 %% Set defaults
 nRuns = '3';
 WhichFolder = 'retinotopy';
-ScreenHeight = '27';
-ViewingDistance = '34';
+ScreenHeight = '18.5'; % cm
+ViewingDistance = '57.5'; % cm
 
 %% Set paths
 p.Home = '/egor2/egor/MovieProject2';
@@ -28,7 +28,7 @@ disp(['Subject: ' p.subNames])
 
 nRuns = str2double(nRuns);
 for i = 1:nRuns
-    p.scanNames{i} = sprintf('pb02.%s.r0%d.volreg+orig', SubID, i);
+    p.scanNames{i} = sprintf('pb02.%s.r0%d.volreg+orig', SubID, i); % change later
     p.ppscanNames{i} = p.scanNames{i};
 end
 
