@@ -12,7 +12,7 @@ p.retinoDIR = [p.Home '/bids_data/derivatives'];
 p.SamSrf = '/egor2/egor/MovieProject2/utils/SamSrf_V7.13';
 addpath(genpath(p.SamSrf))
 
-subjects = {'sub-01', 'sub-02', 'sub-03'};
+subjects = {'sub-01', 'sub-02', 'sub-03', 'sub-05', 'sub-06'};
 disp(['Found ' num2str(length(subjects)) ' subjects with retinotopy data.'])
 
 Prefix = 'vol2surf';
@@ -56,7 +56,7 @@ for s = 1:length(subjects)
     anatpath = '../anatomy/';
 
     % === Locate MGH files
-    files = dir(fullfile(fMRIFolder, ['*' Prefix '*.mgh']));
+    files = dir(fullfile(fMRIFolder, [Prefix '*.mgh']));
     scanlist = fullfile({files.folder}, {files.name});
 
     if isempty(scanlist)
