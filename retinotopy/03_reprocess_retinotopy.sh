@@ -14,8 +14,8 @@ export SUBJECTS_DIR=/egor2/egor/MovieProject2/bids_data/derivatives/freesurfer
 max_jobs=4
 export OMP_NUM_THREADS=3
 
-# Extract subject IDs dynamically from the bids_data folder
-subjects="01 21"
+# Subjects with mincost > 0.45
+subjects="01 07 20 21 25 44"
 echo "The list of subjects to be preprocessed: ${subjects[@]}"
 
 # Run AFNI
