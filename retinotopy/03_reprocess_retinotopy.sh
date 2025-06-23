@@ -57,10 +57,10 @@ for subject_id in $subjects; do
       tcsh -xef "$script_path.$timestamp" 2>&1 | tee "$output_path.$timestamp"
 
       # Convert BRIK to nifti
-      3dAFNItoNIFTI -prefix "$results_path.$timestamp"/vr_base_min_outlier+orig.nii.gz "$results_path.$timestamp"/vr_base_min_outlier+orig.BRIK
+      3dAFNItoNIFTI -prefix "$results_path.$timestamp"/vr_base_external+orig.nii.gz "$results_path.$timestamp"/vr_base_external+orig.BRIK
 
       # This tells bbregister to create a data file with all the registration parameters needed to align the T2 image to the associated T1 image
-      bbregister --s sub-"$subject_id" --mov "$results_path.$timestamp"/vr_base_min_outlier+orig.nii.gz --reg "$results_path.$timestamp"/"$subject_id"-register.dat --T2
+      bbregister --s sub-"$subject_id" --mov "$results_path.$timestamp"/vr_base_external+orig.nii.gz --reg "$results_path.$timestamp"/"$subject_id"-register.dat --T2
 
       # mri_vol2surf
       runs="01 02 03"
