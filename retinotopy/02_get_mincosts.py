@@ -36,4 +36,5 @@ df = df.sort_values(by='sub_id')  # Sort alphabetically by sub_id
 # Save to CSV
 filename = 'retinotopy_mincost_per_sub.csv'
 df.to_csv(f'/egor2/egor/MovieProject2/analysis/retinotopy/{filename}', index=False)
+print(f"Subjects with mincost > 0.45: {df[df['mincost'] > 0.45]}")
 print(f"Saved: {filename}")
