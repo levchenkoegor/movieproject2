@@ -10,17 +10,16 @@ export FREESURFER_HOME=/tools/freesurfer
 source $FREESURFER_HOME/SetUpFreeSurfer.sh
 export SUBJECTS_DIR=/egor2/egor/MovieProject2/bids_data/derivatives/freesurfer
 
-# Maximum number of parallel jobs nad threads
+# Maximum number of parallel jobs and threads
 max_jobs=8
 export OMP_NUM_THREADS=3
 
 # Extract subject IDs dynamically from the bids_data folder
 subjects=$(ls -d $data_folder/sub-* | awk -F'/' '{print $NF}' | sed 's/sub-//' | sort -n)
-subjects="01 02 03 05 06"
 echo "The list of subjects to be preprocessed: ${subjects[@]}"
 
-# subjects="01 02 03 05 06 07 08 09 10" # DONE
-# subjects="11 12 13 14 16 17 18 19 20 21 22" # DONE
+# subjects="01 02 03 04 05 06 07 08" # DONE
+# subjects="09 10 11 12 13 14 16 17 18 19 20 21 22" # DONE
 # subjects="23 24 25 26 27 29 30 31 32 33 35 36 37 38 39 40 42 43 44" # DONE
 
 # Run AFNI
