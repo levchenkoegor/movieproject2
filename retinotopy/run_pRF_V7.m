@@ -3,6 +3,11 @@ function run_pRF_V7(SubID)
 % Adjusted for Ubuntu server setup (15/06/2025)
 % Created    : "2015-03-16 14:42:38 TDekker"
 
+test = false;
+if test
+    disp('Just a test, no calculations done...');
+    return;
+end
 
 %% Set defaults
 nRuns = '3';
@@ -88,4 +93,10 @@ for hem = 1:length(Hemis)
 end
 
 disp('%%%%%%% ALL DONE %%%%%%%')
+
+% Shut down parpool if open
+if ~isempty(gcp('nocreate'))
+    delete(gcp('nocreate'));
+end
+
 end
