@@ -55,7 +55,7 @@ total_cols = 2 * n_cols + gap_cols
 slice_indices = [20, 27, 34, 41, 48, 55, 62, 68, 75]
 orientations = ['sagittal', 'axial']
 
-fig, axes = plt.subplots(n_rows, total_cols, figsize=(36, 18), gridspec_kw=dict(wspace=0.02, hspace=0.01))
+fig, axes = plt.subplots(n_rows, total_cols, figsize=(28, 16), gridspec_kw=dict(wspace=0.02, hspace=0.01))
 
 for i_orient, orientation in enumerate(orientations):
     axis = {'sagittal': 0, 'axial': 2}[orientation]
@@ -88,6 +88,6 @@ cbar_ax = fig.add_axes([0.93, 0.15, 0.015, 0.7])
 fig.colorbar(plt.cm.ScalarMappable(norm=plt.Normalize(vmin=vmin, vmax=vmax), cmap=cmap), cax=cbar_ax)
 
 # === Save ===
-plt.suptitle(f"FDR-corrected ISC (q < {fdr_alpha})", fontsize=20, y=0.95)
+plt.suptitle(f"FDR-corrected ISC (q < {fdr_alpha})", fontsize=25, y=0.95)
 plt.savefig(output_path, dpi=600, bbox_inches="tight")
 plt.show()
