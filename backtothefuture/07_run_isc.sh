@@ -66,22 +66,6 @@ isc_calculation() {
   fi
 }
 
-# Create group-level average mask
-echo "Creating group-level average mask..."
-mask_inputs=()
-for subj in "${subjects[@]}"; do
-  subj_id=$(echo "$subj" | sed 's/sub-//')
-  results_path=$(find_results_folder "$subj")
-  full_mask="${results_path}/full_mask.${subj_id}+tlrc.HEAD"
-  if [[ -f "$full_mask" ]]; then
-    mask_inputs+=("$full_mask")
-  else
-    echo "Warning: Missing mask for $subj, skipping."
-  fi
-done
-
-3dMean -prefix "$output_dir/average_T1w_mask.nii.gz" "${mask_inputs[@]}"
-
 # Run ISC calculations for unique subject pairs
 for ((i = 0; i < ${#subjects[@]}; i++)); do
   for ((j = i + 1; j < ${#subjects[@]}; j++)); do
@@ -95,5 +79,8 @@ done
   -model '1+(1|Subj1)+(1|Subj2)' \
   -mask "$output_dir"/average_T1w_mask.nii.gz \
   -dataTable @$data_table
+
+# Convert to nii format
+3dAFNItoNIFTI -prefix "$output_dir"/ISC_group.nii.gz "$output_dir"/ISC_group+tlrc
 
 echo "ISC analysis complete. Results saved to $output_dir"
