@@ -4,7 +4,7 @@ import pandas as pd
 from pathlib import Path
 
 # === Setup ===
-base_dir = Path('/data/elevchenko/MovieProject2')
+base_dir = Path('/egor2/egor/MovieProject2')
 plots_dir = base_dir / "bids_data/derivatives/group_analysis"
 plots_dir.mkdir(parents=True, exist_ok=True)
 
