@@ -8,8 +8,8 @@ log_file="${output_dir}/group_ttests_log.txt"
 > "$log_file"  # clear previous log
 
 # Get subject IDs with somatotopy results
-#subjects=$(find "$results_dir" -maxdepth 2 -type d -name "sub-*" | grep -E "sub-[0-9]+$" | awk -F'/' '{print $NF}' | sed 's/sub-//')
-subjects=("01" "02")
+subjects=$(find "$results_dir" -maxdepth 2 -type d -name "sub-*" | grep -E "sub-[0-9]+$" | awk -F'/' '{print $NF}' | sed 's/sub-//' | sort -n)
+subjects=($subjects)
 echo "[INFO] Found subjects: ${subjects[@]}" | tee -a "$log_file"
 
 # Define conditions and contrasts
@@ -70,12 +70,13 @@ for label in "${labels[@]}"; do
       subbrick_label=$(3dinfo -label "${stat_file}[${idx}]")
       echo "[SUBJ] sub-${subj} using index $idx -> ${stat_file}[${idx}] = $subbrick_label" >> "$log_file"
    else
-      echo "[MISSING] ${stat_file}.HEAD or .BRIK.gz not found" | tee -a "$log_file"
+      echo "[MISSING] ${stat_file}.HEAD or .BRIK.gz not found for sub-${subj}" | tee -a "$log_file"
     fi
   done
 
   echo "[INFO] Running 3dttest++ for label: $label (sub-brick #$idx)" | tee -a "$log_file"
   3dttest++ \
+    -ClustSim \
     -prefix "${output_dir}/group_ttest_${label}" \
     -mask "$output_dir/group_mask+tlrc" \
     -setA Group "${setA[@]}" \
