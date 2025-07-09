@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 # Define paths
-base_dir = Path('/data/elevchenko/MovieProject2')
+base_dir = Path('/egor2/egor/MovieProject2')
 somatotopy_dir = 'somatotopy'
 fd_file_pattern = 'motion_{subject_id}_enorm.1D'
 
