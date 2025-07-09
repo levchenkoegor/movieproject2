@@ -3,7 +3,7 @@ import pandas as pd
 from pathlib import Path
 
 # Define paths
-base_dir = Path('/data/elevchenko/MovieProject2')
+base_dir = Path('/egor2/egor/MovieProject2')
 task_name = 'backtothefuture'
 output_per_subject_csv = base_dir / "bids_data/derivatives/group_analysis/backtothefuture" / f"{task_name}_per_subject_motion.csv"
 output_mean_csv = base_dir / "bids_data/derivatives/group_analysis/backtothefuture" / f"{task_name}_mean_motion.csv"

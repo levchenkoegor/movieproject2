@@ -1,11 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
 
 from pathlib import Path
 
 # Define paths
-base_dir = Path('/data/elevchenko/MovieProject2')
+base_dir = Path('/egor2/egor/MovieProject2')
 bttf_dir = 'backtothefuture'
 fd_file_pattern = 'motion_{subject_id}_enorm.1D'
 
