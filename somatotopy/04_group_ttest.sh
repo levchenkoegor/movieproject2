@@ -76,12 +76,10 @@ for label in "${labels[@]}"; do
 
   echo "[INFO] Running 3dttest++ for label: $label (sub-brick #$idx)" | tee -a "$log_file"
   3dttest++ \
-    -ClustSim \
     -prefix "${output_dir}/group_ttest_${label}" \
     -mask "$output_dir/group_mask+tlrc" \
     -setA Group "${setA[@]}" \
     | tee -a "$log_file"
-
 
 done
 echo "[DONE] All t-tests complete. Log saved to $log_file"
