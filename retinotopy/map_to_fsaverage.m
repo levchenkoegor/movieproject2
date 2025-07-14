@@ -16,6 +16,7 @@ hem = {'lh', 'rh'};
 % Get all subject directories in p.FS_subDIR
 d = dir(fullfile(p.FS_subDIR, 'sub-*'));
 subjects = {d([d.isdir]).name}; % cell array of 'sub-01', 'sub-02', etc.
+% subjects = {'sub-01', 'sub-02'}; % for a test
 
 %% Surface projection (and normalisation) to fsaverage
 fprintf('Surface projection (and normalisation) to fsaverage\n');
@@ -34,9 +35,9 @@ for i = 1:length(subjects)
             hemi = hem{h};
 
             % File: lh_sub-01_task_retinotopy_pRF_Gaussian.mat
-            filename = sprintf('%s_%s_task_retinotopy_pRF_Gaussian.mat', hemi, subj);
+            filename = sprintf('%s_%s_task_retinotopy_pRF_Gaussian', hemi, subj);
             NatSrf = fullfile(retino_dir, filename);
-            if ~exist(NatSrf, 'file')
+            if ~exist([NatSrf '.mat'], 'file')
                 warning('Skipping %s: missing file %s', subj, filename);
                 continue;
             end
@@ -54,8 +55,7 @@ for i = 1:length(subjects)
             cd(curr_dir);
 
             % Update Structural field
-            [~, name, ~] = fileparts(filename);
-            sn_file = fullfile(map_dir, [name '_sn.mat']);
+            sn_file = [NatSrf '_sn.mat'];
 
             if exist(sn_file, 'file')
                 fprintf('Updating Structural path in: %s\n', sn_file);
