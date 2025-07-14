@@ -21,37 +21,53 @@ subjects = {d([d.isdir]).name}; % cell array of 'sub-01', 'sub-02', etc.
 fprintf('Surface projection (and normalisation) to fsaverage\n');
 
 for i = 1:length(subjects)
-    subj = subjects{i}; % 'sub-01'
+    subj = subjects{i};
 
-    for h = 1:length(hem)
-        hemi = hem{h};
-
-        % Input file: lh_sub-01_task_retinotopy_pRF_Gaussian
-        filename = sprintf('%s_%s_task_retinotopy_pRF_Gaussian', hemi, subj);
-        NatSrf = fullfile(p.FS_subDIR, subj, 'retinotopy', filename);
-
-        % Mesh and output folders
-        MeshFolder = fullfile(p.FS_subDIR, subj, 'surf');
-        TmpFolder = fullfile(p.FS_subDIR, 'fsaverage');
-
-        % Run Native2TemplateMap
-        map_dir = fileparts(NatSrf);
-        curr_dir = pwd;
-        cd(map_dir);
-        fprintf('Projecting %s to fsaverage...\n', filename);
-        Native2TemplateMap(NatSrf, MeshFolder, TmpFolder);
-        cd(curr_dir);
-
-        % Update Structural field to fsaverage
-        sn_file = [NatSrf '_sn.mat'];
-
-        if exist(sn_file, 'file')
-            fprintf('Updating Structural path in: %s\n', sn_file);
-            load(sn_file, 'Srf');
-            Srf.Structural = fullfile(TmpFolder, 'surf');
-            save(sn_file, 'Srf');
-        else
-            warning('File not found: %s', sn_file);
+    try
+        retino_dir = fullfile(p.FS_subDIR, subj, 'retinotopy');
+        if ~exist(retino_dir, 'dir')
+            warning('Skipping %s: no retinotopy folder found.', subj);
+            continue;
         end
+
+        for h = 1:length(hem)
+            hemi = hem{h};
+
+            % File: lh_sub-01_task_retinotopy_pRF_Gaussian.mat
+            filename = sprintf('%s_%s_task_retinotopy_pRF_Gaussian.mat', hemi, subj);
+            NatSrf = fullfile(retino_dir, filename);
+            if ~exist(NatSrf, 'file')
+                warning('Skipping %s: missing file %s', subj, filename);
+                continue;
+            end
+
+            MeshFolder = fullfile(p.FS_subDIR, subj, 'surf');
+            TmpFolder = fullfile(p.FS_subDIR, 'fsaverage');
+
+            % Go to map dir and run projection
+            map_dir = fileparts(NatSrf);
+            curr_dir = pwd;
+
+            cd(map_dir);
+            fprintf('Projecting %s to fsaverage...\n', filename);
+            Native2TemplateMap(filename, MeshFolder, TmpFolder);
+            cd(curr_dir);
+
+            % Update Structural field
+            [~, name, ~] = fileparts(filename);
+            sn_file = fullfile(map_dir, [name '_sn.mat']);
+
+            if exist(sn_file, 'file')
+                fprintf('Updating Structural path in: %s\n', sn_file);
+                load(sn_file, 'Srf');
+                Srf.Structural = fullfile(TmpFolder, 'surf');
+                save(sn_file, 'Srf');
+            else
+                warning('File not found: %s', sn_file);
+            end
+        end
+    catch ME
+        warning('Error processing %s: %s', subj, ME.message);
+        continue;
     end
 end
