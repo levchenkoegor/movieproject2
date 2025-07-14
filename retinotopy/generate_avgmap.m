@@ -14,8 +14,14 @@ addpath(genpath(p.SamSrf))
 hem = {'lh', 'rh'};
 
 % Subjects to include in average
-subjects = {d([d.isdir]).name}; % cell array of 'sub-01', 'sub-02', etc.
-%subjects = {'sub-01', 'sub-02'}; % for testing purposes
+d = dir(fullfile(p.FS_subDIR, 'sub-*'));
+all_subjects = {d([d.isdir]).name};
+%all_subjects = {'sub-02', 'sub-03'}; % for testing purposes
+bad_subjects = {'sub-07', 'sub-17', 'sub-29'};  % based on visual inspection
+
+% Remove bad subjects
+subjects = setdiff(all_subjects, bad_subjects);
+fprintf('Including %d subjects, excluding %d bad subjects.\n', length(subjects), length(bad_subjects));
 
 % Preallocate storage for all subject maps
 for h = 1:length(hem)
@@ -23,11 +29,14 @@ for h = 1:length(hem)
 end
 
 % Load _sn.mat surface files for each subject
+included_subject_count = 0;
+
 for s = 1:length(subjects)
     subj = subjects{s};
     fprintf('\nProcessing %s...\n', subj);
     subj_folder = fullfile(p.FS_subDIR, subj, 'retinotopy');
 
+    valid = true;
     for h = 1:length(hem)
         hemi = hem{h};
         filename = sprintf('%s_%s_task_retinotopy_pRF_Gaussian_sn.mat', hemi, subj);
@@ -41,7 +50,12 @@ for s = 1:length(subjects)
             end
         else
             warning('Missing file: %s', filepath);
+            valid = false;
         end
+    end
+
+    if valid
+        included_subject_count = included_subject_count + 1;
     end
 end
 
@@ -50,7 +64,7 @@ for h = 1:length(hem)
     Srf = Srf_template{h};  % start from last subjects Srf
     Srf.Data = squeeze(nanmean(Srf_all{h}, 1));  % average across subjects
 
-    outname = sprintf('%s_task_retinotopy_pRF_fsaverage_nsubj-%02d.mat', hem{h}, length(subjects));
+    outname = sprintf('%s_task_retinotopy_pRF_fsaverage_nsubj-%02d.mat', hem{h}, included_subject_count);
     outpath = fullfile(p.FS_subDIR, 'fsaverage', outname);
     save(outpath, 'Srf');
     fprintf('Saved average map to: %s\n', outpath);
