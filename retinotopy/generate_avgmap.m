@@ -64,8 +64,13 @@ for h = 1:length(hem)
     Srf = Srf_template{h};  % start from last subjects Srf
     Srf.Data = squeeze(nanmean(Srf_all{h}, 1));  % average across subjects
 
+    outdir = fullfile(p.FS_subDIR, 'fsaverage', 'retinotopy');
+    if ~exist(outdir, 'dir')
+        mkdir(outdir);
+    end
+
     outname = sprintf('%s_task_retinotopy_pRF_fsaverage_nsubj-%02d.mat', hem{h}, included_subject_count);
-    outpath = fullfile(p.FS_subDIR, 'fsaverage', outname);
+    outpath = fullfile(outdir, outname);
     save(outpath, 'Srf');
     fprintf('Saved average map to: %s\n', outpath);
 end
