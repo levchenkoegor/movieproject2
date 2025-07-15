@@ -5,32 +5,43 @@ results_dir="/egor2/egor/MovieProject2/bids_data/derivatives"
 output_dir="${results_dir}/group_analysis/somatotopy/group_stats"
 mkdir -p "$output_dir"
 log_file="${output_dir}/group_ttests_log.txt"
-> "$log_file"  # clear previous log
+> "$log_file"
 
-# Get subject IDs with somatotopy results
+nifti_out_dir="${output_dir}/niftis"
+mkdir -p "$nifti_out_dir"
+
+# get subjects
 subjects=$(find "$results_dir" -maxdepth 2 -type d -name "sub-*" | grep -E "sub-[0-9]+$" | awk -F'/' '{print $NF}' | sed 's/sub-//' | sort -n)
 subjects=($subjects)
 echo "[INFO] Found subjects: ${subjects[@]}" | tee -a "$log_file"
 
-# Define conditions and contrasts
-# Not sure why but all glt labels are the same: LeftFootVSRightFoot for all contrasts
-# Contrasts sub-bricks actually contain:
-#1 'LeftFootVSRightFoot'
-#2 'LeftHandVSRightHand'
-#3 'LeftFaceVSRightFace'
-#4 'LeftTongueVSRightTongue'
-#5 'FaceVSFoot'
-#6 'FaceVSHand'
-#7 'FaceVSTongue'
-#8 'HandVSFoot'
-#9 'HandVSTongue'
-#10 'FootVSTongue'
-labels=("LeftFoot#0_Coef" "RightFoot#0_Coef" "LeftHand#0_Coef" "RightHand#0_Coef" "LeftFace#0_Coef" "RightFace#0_Coef" "LeftTongue#0_Coef" "RightTongue#0_Coef"
-        "LeftFootVSRightFoot#0_Coef" "LeftFootVSRightFoot#1_Coef" "LeftFootVSRightFoot#2_Coef" "LeftFootVSRightFoot#3_Coef"
-        "LeftFootVSRightFoot#4_Coef" "LeftFootVSRightFoot#5_Coef" "LeftFootVSRightFoot#6_Coef" "LeftFootVSRightFoot#7_Coef"
-        "LeftFootVSRightFoot#8_Coef" "LeftFootVSRightFoot#9_Coef")
+# main effects — preserve AFNI labels for easier indexing, clean names for output
+declare -A main_effect_map=(
+  ["LeftFoot#0_Coef"]="LeftFoot"
+  ["RightFoot#0_Coef"]="RightFoot"
+  ["LeftHand#0_Coef"]="LeftHand"
+  ["RightHand#0_Coef"]="RightHand"
+  ["LeftFace#0_Coef"]="LeftFace"
+  ["RightFace#0_Coef"]="RightFace"
+  ["LeftTongue#0_Coef"]="LeftTongue"
+  ["RightTongue#0_Coef"]="RightTongue"
+)
 
-# Get sub-brick indices from a reference subject (sub-01)
+# contrasts — all AFNI labels are "LeftFootVSRightFoot#N_Coef", but they mean:
+contrast_labels=(
+  "LeftFootVSRightFoot"
+  "LeftHandVSRightHand"
+  "LeftFaceVSRightFace"
+  "LeftTongueVSRightTongue"
+  "FaceVSFoot"
+  "FaceVSHand"
+  "FaceVSTongue"
+  "HandVSFoot"
+  "HandVSTongue"
+  "FootVSTongue"
+)
+
+# Reference stats file for sub-brick index lookup
 ref_subj="01"
 ref_stats_file=$(find "${results_dir}/sub-${ref_subj}/somatotopy" -name "stats.${ref_subj}_REML+tlrc.HEAD" | head -n 1)
 declare -A label2idx
@@ -52,39 +63,67 @@ done < <(3dinfo -verb "$ref_stats_file")
   -frac 0 \
   -overwrite
 
+# ttests for main effects
+for label in "${!main_effect_map[@]}"; do
+  idx="${label2idx[$label]}"
+  output_label="${main_effect_map[$label]}"
 
-# Loop over each label and run 3dttest++
-for label in "${labels[@]}"; do
-  idx="${label2idx[${label}]}"
   if [[ -z "$idx" ]]; then
-    echo "[SKIP] $label not found in sub-bricks. Skipping..." | tee -a "$log_file"
+    echo "[SKIP] $label not found in sub-bricks." | tee -a "$log_file"
     continue
   fi
 
+  echo "[INFO] Running 3dttest++ for main effect: $output_label (sub-brick $idx)" | tee -a "$log_file"
+
   setA=()
   for subj in "${subjects[@]}"; do
-    stat_file=$(find "${results_dir}/sub-${subj}/somatotopy" -type f -name "stats.${subj}_REML+tlrc.HEAD" | head -n 1 | sed 's/\.HEAD$//')
-
+    stat_file=$(find "${results_dir}/sub-${subj}/somatotopy" -name "stats.${subj}_REML+tlrc.HEAD" | head -n 1 | sed 's/\.HEAD$//')
     if [[ -f "${stat_file}.HEAD" && -f "${stat_file}.BRIK.gz" ]]; then
       setA+=("s${subj}" "${stat_file}[${idx}]")
-      subbrick_label=$(3dinfo -label "${stat_file}[${idx}]")
-      echo "[SUBJ] sub-${subj} using index $idx -> ${stat_file}[${idx}] = $subbrick_label" >> "$log_file"
-   else
-      echo "[MISSING] ${stat_file}.HEAD or .BRIK.gz not found for sub-${subj}" | tee -a "$log_file"
     fi
   done
 
-  echo "[INFO] Running 3dttest++ for label: $label (sub-brick #$idx)" | tee -a "$log_file"
   3dttest++ \
-    -prefix "${output_dir}/group_ttest_${label}" \
+    -prefix "${output_dir}/group_ttest_${output_label}" \
     -mask "$output_dir/group_mask+tlrc" \
     -setA Group "${setA[@]}" \
     | tee -a "$log_file"
 
+  3dAFNItoNIFTI -prefix "${nifti_out_dir}/group_ttest_${output_label}.nii.gz" "${output_dir}/group_ttest_${output_label}+tlrc"
 done
-echo "[DONE] All t-tests complete. Log saved to $log_file"
 
-template_src="/egor2/egor/MovieProject2/bids_data/derivatives/sub-01/backtothefuture/sub-01.results.20250211_214642/MNI152_2009_template_SSW.nii.gz"
+# ttests for contrasts
+for idx in "${!contrast_labels[@]}"; do
+  afni_label="LeftFootVSRightFoot#${idx}_Coef"  # still use this to extract the index
+  output_label="${contrast_labels[$idx]}"  # correct contrast name
+  idx_val="${label2idx[$afni_label]}"
+
+  if [[ -z "$idx_val" ]]; then
+    echo "[SKIP] Could not find sub-brick for $afni_label" | tee -a "$log_file"
+    continue
+  fi
+
+  echo "[INFO] Running 3dttest++ for contrast: $output_label (from sub-brick $idx_val)" | tee -a "$log_file"
+
+  setA=()
+  for subj in "${subjects[@]}"; do
+    stat_file=$(find "${results_dir}/sub-${subj}/somatotopy" -name "stats.${subj}_REML+tlrc.HEAD" | head -n 1 | sed 's/\.HEAD$//')
+    if [[ -f "${stat_file}.HEAD" && -f "${stat_file}.BRIK.gz" ]]; then
+      setA+=("s${subj}" "${stat_file}[${idx_val}]")
+    fi
+  done
+
+  3dttest++ \
+    -prefix "${output_dir}/group_ttest_${output_label}" \
+    -mask "$output_dir/group_mask+tlrc" \
+    -setA Group "${setA[@]}" \
+    | tee -a "$log_file"
+
+  3dAFNItoNIFTI -prefix "${nifti_out_dir}/group_ttest_${output_label}.nii.gz" "${output_dir}/group_ttest_${output_label}+tlrc"
+done
+
+# symlink mni template
+template_src="${results_dir}/sub-01/backtothefuture/sub-01.results.20250211_214642/MNI152_2009_template_SSW.nii.gz"
 template_dest="${output_dir}/MNI152_2009_template_SSW.nii.gz"
 if [[ ! -e "$template_dest" ]]; then
   ln -s "$template_src" "$template_dest"
@@ -92,3 +131,5 @@ if [[ ! -e "$template_dest" ]]; then
 else
   echo "[INFO] Symlink already exists: $template_dest" | tee -a "$log_file"
 fi
+
+echo "[DONE] All group tests and NIfTI conversions complete." | tee -a "$log_file"
