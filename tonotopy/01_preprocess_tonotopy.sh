@@ -75,7 +75,7 @@ for subject_id in $subjects; do
       3dAFNItoNIFTI -prefix "$results_path.$timestamp"/vr_base_min_outlier+orig.nii.gz "$results_path.$timestamp"/vr_base_min_outlier+orig.BRIK
 
       # This tells bbregister to create a data file with all the registration parameters needed to align the T2 image to the associated T1 image.
-      bbregister --s sub-"$subject_id" --mov "$results_path.$timestamp"/vr_base_min_outlier+orig.nii.gz --reg "$output_path.$timestamp"/"$subject_id"-tono-register.dat --T2
+      bbregister --s sub-"$subject_id" --mov "$results_path.$timestamp"/vr_base_min_outlier+orig.nii.gz --reg "$results_path.$timestamp"/"$subject_id"-tono-register.dat --T2
 
       # Compress files for this subject
       echo "Compressing files for subject $subject_id..."
