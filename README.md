@@ -43,7 +43,3 @@ If you use this code or dataset in your work, please cite the associated paper:
 Additionally, citing the dataset on [OpenNeuro](google.com) is encouraged when reusing the data.  
 
 You can also support the project by starring this repository on GitHub ⭐ — it helps others discover the resource and shows appreciation for the work.
-
-## License
-
-BSD 3-Clause License
