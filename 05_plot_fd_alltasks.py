@@ -27,6 +27,11 @@ def load_fd(subject_id, task_dir):
 fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(18, 26))
 fig.subplots_adjust(hspace=0.3, wspace=0.2)
 
+# === Fixed histogram binning ===
+XMAX = 0.8
+BIN_WIDTH = 0.02   # choose any resolution you want
+BIN_EDGES = np.arange(0, XMAX + BIN_WIDTH, BIN_WIDTH)
+
 # === Task-Specific Processing ===
 for i, task in enumerate(tasks):
     task_dir = task
@@ -139,18 +144,21 @@ for i, task in enumerate(tasks):
     # === Plot Left: Overall Histogram ===
     ax_hist = axes[i, 0]
     if len(fd_all) > 0:
-        n, bins = np.histogram(fd_all, bins=100, range=(0, max(fd_all)), density=True)
-        bin_width = bins[1] - bins[0]
+        # Use the same bins for all tasks
+        n, bins = np.histogram(fd_all, bins=BIN_EDGES, range=(0, XMAX), density=True)
+        bin_width = BIN_WIDTH  # constant across tasks
         n_percent = n * bin_width * 100
         ax_hist.bar(bins[:-1], n_percent, width=bin_width, color='skyblue', edgecolor='black')
-        ax_hist.axvline(np.percentile(fd_all, 95), color='red', linestyle='--', linewidth=1,
-                        label=f'95th Percentile: {np.percentile(fd_all, 95):.2f} mm')
-        ax_hist.set_xlim(-0.05, 0.8)
+        p95 = np.percentile(fd_all, 95)
+        ax_hist.axvline(p95, color='red', linestyle='--', linewidth=1,
+                        label=f'95th Percentile: {p95:.2f} mm')
+
+        ax_hist.set_xlim(-0.05, XMAX)
         ax_hist.set_ylabel("Percentage (%)", fontsize=20)
         ax_hist.set_xlabel("Framewise Displacement (mm)", fontsize=20)
         ax_hist.tick_params(axis="x", labelsize=18)
         ax_hist.tick_params(axis="y", labelsize=18)
-        ax_hist.set_title("Framewise Displacement distribution across all participants", fontsize=22)
+        ax_hist.set_title("Framewise Displacement distribution across all participants", fontsize=22, pad=16)
         ax_hist.grid(axis='y', linestyle='--', alpha=0.7)
         ax_hist.legend(loc='upper right', fontsize=18)
 
@@ -168,7 +176,7 @@ for i, task in enumerate(tasks):
         ax_violin.tick_params(axis="x", labelsize=18)
         ax_violin.tick_params(axis="y", labelsize=18)
         ax_violin.set_ylim(-0.05, 0.6)
-        ax_violin.set_title(f"Framewise Displacement by {'run' if 'Run' in labels[0] else 'condition'}", fontsize=22)
+        ax_violin.set_title(f"Framewise Displacement by {'run' if 'Run' in labels[0] else 'condition'}", fontsize=22, pad=16)
         ax_violin.set_ylabel("Framewise Displacement (mm)", fontsize=20)
         ax_violin.grid(axis='y', linestyle='--', alpha=0.7)
 
