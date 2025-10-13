@@ -2,7 +2,7 @@ from pathlib import Path
 import pandas as pd
 
 # Define file paths using pathlib
-root_path = Path(r'/data/elevchenko/MovieProject2/')
+root_path = Path(r'/egor2/egor/MovieProject2/')
 
 raw_data_path = root_path / 'raw_data'
 output_path = root_path / 'bids_data' / 'sourcedata'
