@@ -19,7 +19,7 @@ max_jobs=10
 ## Run from /MovieProject2/ folder
 
 # Define the path to the project
-project_path="/data/elevchenko/MovieProject2"
+project_path="/egor2/egor/MovieProject2"
 subjects="01 02 03 04 05 06 07 08 09 10 11 12 13 14 16 17 18 19 20 21 22 23 24 25 26 27 29 30 31 32 33 35 36 37 38 39 40 42 43 44"
 # Excluded:
 # 15 & 34 (didn't feel well inside the scanner)
