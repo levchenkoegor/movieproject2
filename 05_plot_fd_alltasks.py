@@ -25,7 +25,7 @@ def load_fd(subject_id, task_dir):
 
 # === Panel Plot ===
 fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(18, 26))
-fig.subplots_adjust(hspace=0.4, wspace=0.3)
+fig.subplots_adjust(hspace=0.3, wspace=0.2)
 
 # === Task-Specific Processing ===
 for i, task in enumerate(tasks):
@@ -146,13 +146,13 @@ for i, task in enumerate(tasks):
         ax_hist.axvline(np.percentile(fd_all, 95), color='red', linestyle='--', linewidth=1,
                         label=f'95th Percentile: {np.percentile(fd_all, 95):.2f} mm')
         ax_hist.set_xlim(-0.05, 0.8)
-        ax_hist.set_ylabel("Percentage (%)", fontsize=18)
-        ax_hist.set_xlabel("Framewise Displacement (mm)", fontsize=18)
-        ax_hist.tick_params(axis="x", labelsize=16)
-        ax_hist.tick_params(axis="y", labelsize=16)
-        ax_hist.set_title("Framewise Displacement distribution across all participants", fontsize=20)
+        ax_hist.set_ylabel("Percentage (%)", fontsize=20)
+        ax_hist.set_xlabel("Framewise Displacement (mm)", fontsize=20)
+        ax_hist.tick_params(axis="x", labelsize=18)
+        ax_hist.tick_params(axis="y", labelsize=18)
+        ax_hist.set_title("Framewise Displacement distribution across all participants", fontsize=22)
         ax_hist.grid(axis='y', linestyle='--', alpha=0.7)
-        ax_hist.legend(loc='upper right', fontsize=16)
+        ax_hist.legend(loc='upper right', fontsize=18)
 
     # === Plot Right: FD by Run/Condition ===
     ax_violin = axes[i, 1]
@@ -164,12 +164,12 @@ for i, task in enumerate(tasks):
                           boxprops={'color': 'blue', 'facecolor': 'lightgrey'},
                           medianprops={'color': 'red'})
         ax_violin.set_xticks(np.arange(1, len(labels) + 1))
-        ax_violin.set_xticklabels(labels, rotation=45 if len(labels) > 4 else 0, fontsize=18)
-        ax_violin.tick_params(axis="x", labelsize=16)
-        ax_violin.tick_params(axis="y", labelsize=16)
+        ax_violin.set_xticklabels(labels, rotation=45 if len(labels) > 4 else 0, fontsize=20)
+        ax_violin.tick_params(axis="x", labelsize=18)
+        ax_violin.tick_params(axis="y", labelsize=18)
         ax_violin.set_ylim(-0.05, 0.6)
-        ax_violin.set_title(f"Framewise Displacement by {'run' if 'Run' in labels[0] else 'condition'}", fontsize=20)
-        ax_violin.set_ylabel("Framewise Displacement (mm)", fontsize=18)
+        ax_violin.set_title(f"Framewise Displacement by {'run' if 'Run' in labels[0] else 'condition'}", fontsize=22)
+        ax_violin.set_ylabel("Framewise Displacement (mm)", fontsize=20)
         ax_violin.grid(axis='y', linestyle='--', alpha=0.7)
 
 # === Save Output ===
