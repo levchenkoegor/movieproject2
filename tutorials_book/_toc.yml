@@ -1,0 +1,30 @@
+# ------------------------------------------------------------------
+# Part I: Getting Started (Setup & Data)
+# ------------------------------------------------------------------
+- file: 0.0-Overview.md
+  title: Course Overview
+
+- part: I. Getting Started
+  chapters:
+  - file: 1.1-Environment-Setup.md
+#  - file: 1.2-Data-Access.ipynb
+#  - file: 1.3-Preprocessing-Review.md
+#
+## ------------------------------------------------------------------
+## Part II: Foundational Resources (Preamble)
+## ------------------------------------------------------------------
+#- part: II. Foundational Resources
+#  chapters:
+#  - file: 2.1-BIDS-File-Handling.ipynb
+#  - file: 2.2-Tabular-Data-Events.ipynb
+#  - file: 2.3-Data-Visualization-Toolkit.ipynb
+#
+## ------------------------------------------------------------------
+## Part III: Analysis Tutorials (The Core)
+## ------------------------------------------------------------------
+#- part: III. Analysis Tutorials
+#  chapters:
+#  - file: 3.1-Naturalistic-Analysis-ISC.ipynb
+#  - file: 3.2-Multimodal-Eye-Tracking-Integration.ipynb
+#  - file: 3.3-Task-Specific-Mapping-Somatotopy.ipynb
+#  - file: 3.4-Model-Free-Dynamics-Connectivity.ipynb
