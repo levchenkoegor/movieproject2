@@ -14,5 +14,7 @@ dependencies:
   - nibabel=5.3.2
   - nilearn=0.11.1
   - mne=1.7.0
+  - datalad=1.2.1
+  - jupyter-book
   - pip:
     - pydeface==2.0.2
