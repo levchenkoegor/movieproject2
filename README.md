@@ -1,6 +1,6 @@
 ## Overview
 
-This repository contains scripts for converting data to a BIDS-compliant format, preprocessing, analysing, and plotting data from the *Naturalistic Neuroimaging Database 3T+ (NNDb-3T+)*. The accompanying paper, which describes the tasks, MRI protocols, quality control procedures, and more, is available [here](https://www.biorxiv.org/content/10.1101/2025.09.25.678556v2). The dataset itself is available on the [OpenNeuro repository](https://openneuro.org/datasets/ds006642/versions/1.0.1). All scripts used to analyse specific tasks (backtothefuture, somatotopy, retinotopy, tonotopy) are provided in the relevant folders.
+This repository contains scripts for converting data to a BIDS-compliant format, preprocessing, analysing, and plotting data from the *Naturalistic Neuroimaging Database 3T+ (NNDb-3T+)*. The accompanying paper, which describes the tasks, MRI protocols, quality control procedures, and more, is available [here](https://www.nature.com/articles/s41597-026-07676-4). The dataset itself is available on the [OpenNeuro repository](https://openneuro.org/datasets/ds006642/versions/1.0.3). All scripts used to analyse specific tasks (backtothefuture, somatotopy, retinotopy, tonotopy) are provided in the relevant folders.
 
 ## Repository Structure
 
@@ -13,7 +13,7 @@ Here is a summary of the main files and folders:
 | `02_run_freesurfer.sh` | Run FreeSurfer processing on raw anatomical data. |
 | `03_run_sswarper.sh` | Run `SSwarper` on raw anatomical data. |
 | `04_run_suma.sh` | Run SUMA to convert FreeSurfer outputs into an AFNI-friendly format. |
-| `05_plot_fd_alltasks.py` | Plot framewise displacement across all tasks (Figure 2 in the paper). |
+| `05_plot_fd_alltasks.py` | Plot framewise displacement across all tasks (Figure 3 in the paper). |
 | `backtothefuture` `retinotopy` `somatotopy` `tonotopy` | Scripts used to analyse each respective task. |
 
 ## Requirements
@@ -25,7 +25,7 @@ To reproduce the outputs or run the scripts, the following dependencies are requ
 - FreeSurfer  
 - AFNI  
 - Bash environment for running the `.sh` scripts  
-- Standard Python packages (NumPy, SciPy, pandas, matplotlib, etc.) — see `conda-py-env.yml` for exact versions  
+- Standard Python packages (NumPy, SciPy, pandas, matplotlib, etc.)
 
 ## Contributing
 
@@ -38,8 +38,6 @@ If you would like to contribute:
 
 If you use this code or dataset in your work, please cite the associated paper:
 
-> [Full citation of NNDb3T+ paper once published]
+> Levchenko, E., Chow-Wing-Bom, H., Dick, F., Tierney, A. & Skipper, J. I. A neuroimaging dataset combining movie-watching, eye-tracking, sensorimotor mapping, and cognitive tasks. *Scientific Data* 13, 1184 (2026). https://doi.org/10.1038/s41597-026-07676-4
 
-Additionally, citing the dataset on [OpenNeuro](https://openneuro.org/datasets/ds006642/versions/1.0.1) is encouraged when reusing the data.  
-
-You can also support the project by starring this repository on GitHub ⭐ — it helps others discover the resource and shows appreciation for the work.
+You can also support the project by starring this repository on GitHub ⭐ and on [OpenNeuro](https://openneuro.org/datasets/ds006642/versions/1.0.3) 🧠. It helps others discover the resource and is a great way to show your support!
