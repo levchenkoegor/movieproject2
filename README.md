@@ -1,6 +1,6 @@
 ## Overview
 
-This repository contains scripts for converting data to a BIDS-compliant format, preprocessing, analysing, and plotting data from the *Naturalistic Neuroimaging Database 3T+ (NNDb-3T+)*. The accompanying paper, which describes the tasks, MRI protocols, quality control procedures, and more, is available [here](https://www.nature.com/articles/s41597-026-07676-4). The dataset itself is available on the [OpenNeuro repository](https://openneuro.org/datasets/ds006642/versions/1.0.3). All scripts used to analyse specific tasks (backtothefuture, somatotopy, retinotopy, tonotopy) are provided in the relevant folders.
+This repository contains scripts for converting data to a BIDS-compliant format, preprocessing, analysing, and plotting data from the *Naturalistic Neuroimaging Database 3T+ (NNDb-3T+)*. The accompanying paper, which describes the tasks, MRI protocols, quality control procedures, and more, is available [here](https://www.nature.com/articles/s41597-026-07676-4). The dataset itself is available on the [OpenNeuro repository](https://openneuro.org/datasets/ds006642/versions/1.1.0). All scripts used to analyse specific tasks (backtothefuture, somatotopy, retinotopy, tonotopy) are provided in the relevant folders.
 
 ## Repository Structure
 
@@ -40,4 +40,4 @@ If you use this code or dataset in your work, please cite the associated paper:
 
 > Levchenko, E., Chow-Wing-Bom, H., Dick, F., Tierney, A. & Skipper, J. I. A neuroimaging dataset combining movie-watching, eye-tracking, sensorimotor mapping, and cognitive tasks. *Scientific Data* 13, 1184 (2026). https://doi.org/10.1038/s41597-026-07676-4
 
-You can also support the project by starring this repository on GitHub ⭐ and on [OpenNeuro](https://openneuro.org/datasets/ds006642/versions/1.0.3) 🧠. It helps others discover the resource and is a great way to show your support!
+You can also support the project by starring this repository on GitHub ⭐ and on [OpenNeuro](https://openneuro.org/datasets/ds006642/versions/1.1.0) 🧠. It helps others discover the resource and is a great way to show your support!
